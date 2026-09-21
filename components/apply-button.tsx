@@ -1,10 +1,10 @@
 "use client";
 
 import { useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { sileo } from "sileo";
 
 import { applyToJob } from "@/app/actions/applications";
+import { usePageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 
 export function ApplyButton({
@@ -17,11 +17,11 @@ export function ApplyButton({
   authenticated: boolean;
 }) {
   const [pending, startTransition] = useTransition();
-  const router = useRouter();
+  const { transitionTo } = usePageTransition();
 
   if (!authenticated) {
     return (
-      <Button onClick={() => router.push(`/login?next=/convocatorias/${jobSlug}`)}>
+      <Button onClick={() => transitionTo(`/login?next=/convocatorias/${jobSlug}`)}>
         Ingresar para postular
       </Button>
     );

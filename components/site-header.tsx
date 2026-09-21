@@ -9,38 +9,65 @@ export async function SiteHeader() {
   const session = await getSession();
 
   return (
-    <header className="border-b border-foreground/10">
-      <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between gap-4 px-4">
-        <Link href="/" className="flex items-center gap-2 font-heading font-medium">
-          <ClipboardCheck className="size-5" />
-          Evalua
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/75 backdrop-blur-md transition-all">
+      <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between gap-4 px-4 sm:px-6">
+        <Link
+          href="/"
+          className="group flex items-center gap-2.5 font-heading text-lg font-bold tracking-tight text-foreground transition-opacity hover:opacity-90"
+        >
+          <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary transition-transform group-hover:scale-105">
+            <ClipboardCheck className="size-4.5" />
+          </div>
+          <span>evalua</span>
         </Link>
 
-        <nav className="flex items-center gap-1">
-          <Button variant="ghost" size="sm" render={<Link href="/convocatorias" />}>
+        <nav className="flex items-center gap-1.5 sm:gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground"
+            render={<Link href="/convocatorias" />}
+          >
             Convocatorias
           </Button>
 
           {session ? (
             <>
-              {session.role === "admin" && (
-                <Button variant="ghost" size="sm" render={<Link href="/admin/convocatorias" />}>
+              {session.role === "admin" ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-foreground"
+                  render={<Link href="/admin/convocatorias" />}
+                >
                   Administración
                 </Button>
+              ) : (
+                <Button size="sm" render={<Link href="/panel" />}>
+                  Mi panel
+                </Button>
               )}
-              <Button size="sm" render={<Link href="/panel" />}>
-                Mi panel
-              </Button>
               <form action={signOut}>
-                <Button type="submit" variant="ghost" size="sm" aria-label="Cerrar sesión">
-                  <LogOut data-icon="inline-start" />
+                <Button
+                  type="submit"
+                  variant="ghost"
+                  size="sm"
+                  aria-label="Cerrar sesión"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <LogOut data-icon="inline-start" className="size-3.5" />
                   Salir
                 </Button>
               </form>
             </>
           ) : (
             <>
-              <Button variant="ghost" size="sm" render={<Link href="/login" />}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground hover:text-foreground"
+                render={<Link href="/login" />}
+              >
                 Ingresar
               </Button>
               <Button size="sm" render={<Link href="/registro" />}>

@@ -55,6 +55,7 @@ const INTEGRITY_LABEL: Record<string, string> = {
   info: "Sin incidencias",
   warn: "Algunas incidencias",
   critical: "Incidencias graves",
+  disqualified: "Prueba descalificada",
 };
 
 export function integrityLabel(level: string) {

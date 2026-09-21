@@ -16,28 +16,48 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const target = typeof next === "string" && next.startsWith("/") ? next : "/panel";
 
   return (
-    <>
+    <div className="relative min-h-screen flex flex-col overflow-hidden">
+      {/* Elementos ambientales de fondo */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-1/4 left-1/2 -translate-x-1/2 h-96 w-96 rounded-full bg-primary/5 blur-3xl -z-10"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -bottom-20 -left-20 h-80 w-80 rounded-full bg-accent/60 blur-3xl -z-10"
+      />
+
       <SiteHeader />
-      <main className="mx-auto flex w-full max-w-md flex-1 items-center px-4 py-12">
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle className="text-lg">Ingresa a tu cuenta</CardTitle>
-            <CardDescription>Continúa con tu evaluación o revisa tus postulaciones.</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-6">
-            <AuthForm mode="login" next={target} />
+
+      <main className="flex flex-1 items-center justify-center px-4 py-12 sm:py-16">
+        <div className="organic-floating-card w-full max-w-md bg-card border border-border/70 overflow-hidden">
+          <div className="p-8 pb-3 text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+              acceso a candidatos
+            </p>
+            <h1 className="mt-1 font-heading text-2xl font-bold tracking-tight text-foreground">
+              Ingresa a tu cuenta
+            </h1>
+            <div className="mx-auto mt-2.5 mb-3 h-1 w-8 rounded-full bg-primary" />
             <p className="text-sm text-muted-foreground">
+              Continúa con tu evaluación o revisa tus postulaciones.
+            </p>
+          </div>
+
+          <div className="p-8 pt-2 grid gap-6">
+            <AuthForm mode="login" next={target} />
+            <p className="text-center text-sm text-muted-foreground">
               ¿No tienes cuenta?{" "}
               <Link
                 href={`/registro?next=${encodeURIComponent(target)}`}
-                className="text-foreground underline underline-offset-4"
+                className="font-medium text-primary underline-offset-4 hover:underline"
               >
-                Crear una
+                Crear una cuenta
               </Link>
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </main>
-    </>
+    </div>
   );
 }

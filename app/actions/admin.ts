@@ -11,7 +11,7 @@ const jobSchema = z.object({
   description: z.string().min(20, "Describe el puesto con al menos 20 caracteres"),
   location: z.string().optional(),
   employmentType: z.string().optional(),
-  assessmentId: z.string().uuid("Selecciona una batería"),
+  testIds: z.array(z.string().uuid()).min(1, "Selecciona al menos una prueba"),
 });
 
 function slugify(text: string) {
@@ -32,7 +32,7 @@ export async function createJob(_prev: unknown, formData: FormData) {
     description: formData.get("description"),
     location: formData.get("location") || undefined,
     employmentType: formData.get("employmentType") || undefined,
-    assessmentId: formData.get("assessmentId"),
+    testIds: formData.getAll("testIds"),
   });
 
   if (!parsed.success) {
@@ -42,20 +42,85 @@ export async function createJob(_prev: unknown, formData: FormData) {
   const supabase = await createClient();
   const slug = `${slugify(parsed.data.title)}-${Date.now().toString(36)}`;
 
+  const { data: assessment, error: assessmentError } = await supabase
+    .from("assessments")
+    .insert({ slug: `${slug}-bateria`, name: `Batería · ${parsed.data.title}` })
+    .select("id")
+    .single();
+
+  if (assessmentError || !assessment) return { error: "No pudimos crear la batería de pruebas." };
+
+  const { error: assessmentTestsError } = await supabase.from("assessment_tests").insert(
+    parsed.data.testIds.map((testId, index) => ({
+      assessment_id: assessment.id,
+      test_id: testId,
+      position: index,
+    })),
+  );
+
+  if (assessmentTestsError) {
+    await supabase.from("assessments").delete().eq("id", assessment.id);
+    return { error: "No pudimos asociar las pruebas seleccionadas." };
+  }
+
   const { error } = await supabase.from("job_postings").insert({
     slug,
     title: parsed.data.title,
     description: parsed.data.description,
     location: parsed.data.location ?? null,
     employment_type: parsed.data.employmentType ?? null,
-    assessment_id: parsed.data.assessmentId,
+    assessment_id: assessment.id,
     status: "draft",
     created_by: session.user.id,
   });
 
-  if (error) return { error: "No pudimos crear la convocatoria." };
+  if (error) {
+    await supabase.from("assessments").delete().eq("id", assessment.id);
+    return { error: "No pudimos crear la convocatoria." };
+  }
 
   revalidatePath("/admin/convocatorias");
+  return { success: true };
+}
+
+export async function updateJobTests(jobId: string, testIds: string[]) {
+  await requireAdmin();
+
+  if (!testIds.length) return { error: "Selecciona al menos una prueba." };
+
+  const supabase = await createClient();
+
+  const { data: job } = await supabase
+    .from("job_postings")
+    .select("assessment_id, status")
+    .eq("id", jobId)
+    .maybeSingle();
+
+  if (!job) return { error: "Convocatoria no encontrada." };
+  if (job.status !== "draft") {
+    return { error: "Solo puedes cambiar las pruebas mientras la convocatoria esté en borrador." };
+  }
+
+  const { error: deleteError } = await supabase
+    .from("assessment_tests")
+    .delete()
+    .eq("assessment_id", job.assessment_id);
+
+  if (deleteError) return { error: "No pudimos actualizar las pruebas." };
+
+  const { error: insertError } = await supabase.from("assessment_tests").insert(
+    testIds.map((testId, index) => ({
+      assessment_id: job.assessment_id,
+      test_id: testId,
+      position: index,
+    })),
+  );
+
+  if (insertError) return { error: "No pudimos actualizar las pruebas." };
+
+  revalidatePath(`/admin/convocatorias/${jobId}`);
+  revalidatePath("/admin/convocatorias");
+  revalidatePath("/convocatorias");
   return { success: true };
 }
 

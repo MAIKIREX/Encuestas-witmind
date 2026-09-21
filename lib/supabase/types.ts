@@ -8,8 +8,8 @@ export type AppRole = "admin" | "candidate";
 export type JobStatus = "draft" | "published" | "closed";
 export type ApplicationStatus =
   | "applied" | "in_progress" | "completed" | "shortlisted" | "rejected" | "hired";
-export type AttemptStatus = "in_progress" | "submitted" | "scored" | "expired";
-export type ItemType = "mcq_single" | "likert" | "sjt" | "forced_choice" | "mcq_image";
+export type AttemptStatus = "in_progress" | "submitted" | "scored" | "expired" | "disqualified";
+export type ItemType = "mcq_single" | "likert" | "sjt" | "forced_choice" | "mcq_image" | "free_response";
 export type ScoringStrategy =
   | "key_sum" | "key_sum_subscale" | "likert_reverse" | "sjt_weighted" | "ipsative";
 export type Severity = "info" | "warn" | "critical";
@@ -95,6 +95,7 @@ export type JobPosting = {
   closes_at: string | null;
   created_by: string | null;
   created_at: string;
+  is_internal: boolean;
 };
 
 export type Application = {
@@ -105,6 +106,7 @@ export type Application = {
   applied_at: string;
   completed_at: string | null;
   admin_notes: string | null;
+  is_test: boolean;
 };
 
 export type TestAttempt = {
@@ -122,6 +124,10 @@ export type TestAttempt = {
   integrity_level: Severity;
   events_warn: number;
   events_critical: number;
+  integrity_strikes: number;
+  disqualified_at: string | null;
+  disqualification_reason: string | null;
+  gender: string | null;
 };
 
 export type AttemptScore = {
@@ -185,7 +191,15 @@ export type AttemptState = {
   deadline_at: string | null;
   seconds_remaining: number | null;
   items: AttemptItem[];
-  responses: Record<string, { option_id: string | null; value: number | null }>;
+  responses: Record<
+    string,
+    {
+      option_id: string | null;
+      value: number | null;
+      value_text: string | null;
+      least_option_id: string | null;
+    }
+  >;
 };
 
 export type LikertLabel = { value: number; label: string };
@@ -212,6 +226,8 @@ export type Database = {
     Views: Record<never, never>;
     Functions: {
       apply_to_job: { Args: { p_job_id: string }; Returns: string };
+      start_admin_test_preview: { Args: { p_test_id: string }; Returns: string };
+      discard_test_application: { Args: { p_application_id: string }; Returns: void };
       start_attempt: { Args: { p_application_id: string; p_test_id: string }; Returns: string };
       get_attempt_state: { Args: { p_attempt_id: string }; Returns: Json };
       save_response: {
@@ -221,11 +237,22 @@ export type Database = {
           p_option_id?: string | null;
           p_value_numeric?: number | null;
           p_client_elapsed_ms?: number | null;
+          p_value_text?: string | null;
+          p_least_option_id?: string | null;
         };
         Returns: Json;
       };
       attempt_heartbeat: { Args: { p_attempt_id: string }; Returns: Json };
       finish_attempt: { Args: { p_attempt_id: string }; Returns: Json };
+      report_proctoring_event: {
+        Args: {
+          p_attempt_id: string;
+          p_event_type: ProctorEvent;
+          p_severity?: Severity;
+          p_meta?: Json;
+        };
+        Returns: Json;
+      };
       is_admin: { Args: Record<never, never>; Returns: boolean };
       admin_get_test_items: { Args: { p_test_id: string }; Returns: Json };
       admin_upsert_item: {
@@ -237,6 +264,9 @@ export type Database = {
           p_subscale_id?: string | null;
           p_options: Json;
           p_is_reverse?: boolean;
+          p_media_url?: string | null;
+          p_answer_key?: { accepted: string[]; points?: number } | null;
+          p_forced_choice_key?: Record<string, { most: string[]; least: string[] }> | null;
         };
         Returns: string;
       };

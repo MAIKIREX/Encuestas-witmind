@@ -49,7 +49,7 @@ export default async function InformePage({ params }: PageProps<"/admin/postulac
     supabase
       .from("test_attempts")
       .select(
-        "id, status, started_at, submitted_at, duration_seconds, integrity_level, events_warn, events_critical, tests(name, slug, description), attempt_scores(raw_score, max_score, percent, percentile, band, norm_n)",
+        "id, status, started_at, submitted_at, duration_seconds, integrity_level, events_warn, events_critical, integrity_strikes, disqualification_reason, tests(name, slug, description, scoring_strategy), attempt_scores(raw_score, max_score, percent, percentile, band, norm_n)",
       )
       .eq("application_id", id)
       .order("started_at", { ascending: true }),
@@ -109,7 +109,7 @@ export default async function InformePage({ params }: PageProps<"/admin/postulac
 
       <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="font-heading text-2xl font-medium">
+          <h1 className="font-heading text-2xl font-semibold">
             {profile?.full_name || "Candidato sin nombre"}
           </h1>
           <p className="mt-1 text-muted-foreground">
@@ -153,7 +153,7 @@ export default async function InformePage({ params }: PageProps<"/admin/postulac
         </Card>
       </div>
 
-      <h2 className="mt-10 font-heading text-lg font-medium">Resultado por prueba</h2>
+      <h2 className="mt-10 font-heading text-lg font-semibold">Resultado por prueba</h2>
 
       {!attempts?.length ? (
         <Card className="mt-4">
@@ -175,6 +175,14 @@ export default async function InformePage({ params }: PageProps<"/admin/postulac
                 (a.test_subscales?.display_order ?? 0) - (b.test_subscales?.display_order ?? 0),
             );
             const evts = eventCounts.get(attempt.id);
+            // Elección forzada (PPG-IPG, Test de Liderazgo): la lectura del
+            // resultado es "cuál subescala saca el puntaje más alto", no un
+            // total general — se resalta la subescala dominante.
+            const isIpsative = test?.scoring_strategy === "ipsative";
+            const maxRaw = isIpsative
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              ? Math.max(0, ...subs.map((s: any) => Number(s.raw_score) || 0))
+              : null;
 
             return (
               <Card key={attempt.id}>
@@ -191,7 +199,9 @@ export default async function InformePage({ params }: PageProps<"/admin/postulac
                   <CardDescription>
                     {score
                       ? `${score.raw_score} de ${score.max_score} puntos`
-                      : "Prueba no calificada"}
+                      : attempt.status === "disqualified"
+                        ? "Prueba descalificada por integridad"
+                        : "Prueba no calificada"}
                     {" · "}
                     Tiempo: {formatDuration(attempt.duration_seconds)}
                     {attempt.submitted_at && ` · Enviada el ${formatDateTime(attempt.submitted_at)}`}
@@ -219,18 +229,29 @@ export default async function InformePage({ params }: PageProps<"/admin/postulac
                       <div className="grid gap-3">
                         <p className="text-sm font-medium">Desglose por área</p>
                         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                        {subs.map((s: any) => (
-                          <div key={s.test_subscales?.code} className="grid gap-1.5">
-                            <div className="flex items-baseline justify-between gap-3 text-sm">
-                              <span>{s.test_subscales?.name}</span>
-                              <span className="text-muted-foreground tabular-nums">
-                                {s.raw_score}/{s.max_score} · {s.percent}%
-                                {s.band && ` · ${s.band}`}
-                              </span>
+                        {subs.map((s: any) => {
+                          const isDominant =
+                            isIpsative && maxRaw !== null && maxRaw > 0 && Number(s.raw_score) === maxRaw;
+                          return (
+                            <div key={s.test_subscales?.code} className="grid gap-1.5">
+                              <div className="flex items-baseline justify-between gap-3 text-sm">
+                                <span className={isDominant ? "font-semibold" : undefined}>
+                                  {s.test_subscales?.name}
+                                  {isDominant && (
+                                    <Badge variant="secondary" className="ml-2 align-middle">
+                                      Dominante
+                                    </Badge>
+                                  )}
+                                </span>
+                                <span className="text-muted-foreground tabular-nums">
+                                  {s.raw_score}/{s.max_score} · {s.percent}%
+                                  {s.band && ` · ${s.band}`}
+                                </span>
+                              </div>
+                              <Progress value={Number(s.percent) || 0} />
                             </div>
-                            <Progress value={Number(s.percent) || 0} />
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </>
                   )}
@@ -238,17 +259,23 @@ export default async function InformePage({ params }: PageProps<"/admin/postulac
                   <Separator />
 
                   <div className="flex flex-wrap items-center gap-2">
-                    <Badge
-                      variant={
-                        attempt.integrity_level === "critical"
-                          ? "destructive"
-                          : attempt.integrity_level === "warn"
-                            ? "outline"
-                            : "secondary"
-                      }
-                    >
-                      {integrityLabel(attempt.integrity_level)}
-                    </Badge>
+                    {attempt.status === "disqualified" ? (
+                      <Badge variant="destructive">
+                        Descalificada ({attempt.integrity_strikes} incidencias)
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant={
+                          attempt.integrity_level === "critical"
+                            ? "destructive"
+                            : attempt.integrity_level === "warn"
+                              ? "outline"
+                              : "secondary"
+                        }
+                      >
+                        {integrityLabel(attempt.integrity_level)}
+                      </Badge>
+                    )}
 
                     {evts && evts.size > 0 ? (
                       <span className="text-sm text-muted-foreground">
@@ -262,6 +289,12 @@ export default async function InformePage({ params }: PageProps<"/admin/postulac
                       </span>
                     )}
                   </div>
+
+                  {attempt.status === "disqualified" && attempt.disqualification_reason && (
+                    <p className="text-sm text-muted-foreground">
+                      {attempt.disqualification_reason}
+                    </p>
+                  )}
                 </CardContent>
               </Card>
             );

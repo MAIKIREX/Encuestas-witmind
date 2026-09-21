@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { signAdminMediaPaths } from "@/app/actions/media";
 import { ItemBank, type AdminItem, type Subscale } from "@/components/admin/item-bank";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { createClient } from "@/lib/supabase/server";
@@ -27,13 +28,22 @@ export default async function AdminTestDetailPage({ params }: PageProps<"/admin/
     ...((test.test_subscales ?? []) as unknown as Subscale[]),
   ].sort((a, b) => a.display_order - b.display_order);
 
+  // Firmar de una sola vez todas las imagenes del banco (en vez de que cada
+  // miniatura pida su propia URL): con pruebas de imagen como Raven son
+  // cientos de miniaturas y eso era lo que hacia lenta esta pantalla.
+  const mediaPaths = items.flatMap((item) => [
+    item.media_url,
+    ...item.options.map((o) => o.media_url),
+  ]).filter((p): p is string => Boolean(p));
+  const mediaUrls = await signAdminMediaPaths(mediaPaths);
+
   return (
     <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-10">
       <Link href="/admin/tests" className="text-sm text-muted-foreground hover:underline">
         ← Volver al banco de pruebas
       </Link>
 
-      <h1 className="mt-4 font-heading text-2xl font-medium">{test.name}</h1>
+      <h1 className="mt-4 font-heading text-2xl font-semibold">{test.name}</h1>
       <p className="mt-1 text-muted-foreground">{test.description}</p>
 
       {test.source === "seed_licensed" && (
@@ -52,6 +62,7 @@ export default async function AdminTestDetailPage({ params }: PageProps<"/admin/
         strategy={test.scoring_strategy}
         subscales={subscales}
         items={items}
+        mediaUrls={mediaUrls}
       />
     </main>
   );

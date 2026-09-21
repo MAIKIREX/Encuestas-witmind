@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { TestModeButton } from "@/components/test-mode-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +29,7 @@ export default async function AdminTestsPage() {
 
   return (
     <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-10">
-      <h1 className="font-heading text-2xl font-medium">Banco de pruebas</h1>
+      <h1 className="font-heading text-2xl font-semibold">Banco de pruebas</h1>
       <p className="mt-1 text-muted-foreground">
         Cada prueba es un conjunto de preguntas con su propia forma de calificar. Las claves de
         respuesta se guardan fuera del alcance de la API pública.
@@ -64,10 +65,11 @@ export default async function AdminTestsPage() {
                 </p>
               </CardHeader>
 
-              <div className="px-(--card-spacing)">
+              <div className="flex flex-wrap items-center gap-2 px-(--card-spacing)">
                 <Button size="sm" variant="outline" render={<Link href={`/admin/tests/${test.id}`} />}>
                   Ver y editar preguntas
                 </Button>
+                {test.is_active && <TestModeButton testId={test.id} />}
               </div>
             </Card>
           );

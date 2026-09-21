@@ -16,3 +16,28 @@ export async function applyToJob(jobId: string, jobSlug: string) {
 
   redirect(`/postulaciones/${data}`);
 }
+
+export async function startTestPreview(testId: string) {
+  const session = await getSession();
+  if (!session) redirect("/login?next=/admin/tests");
+  if (session.role !== "admin") return { error: "Solo un administrador puede usar el modo prueba." };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("start_admin_test_preview", { p_test_id: testId });
+
+  if (error) return { error: "No pudimos iniciar el modo prueba. Vuelve a intentarlo." };
+
+  redirect(`/postulaciones/${data}`);
+}
+
+export async function exitTestApplication(applicationId: string) {
+  await getSession();
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("discard_test_application", {
+    p_application_id: applicationId,
+  });
+
+  if (error) return { error: "No pudimos salir del modo prueba. Vuelve a intentarlo." };
+
+  redirect("/admin/tests");
+}

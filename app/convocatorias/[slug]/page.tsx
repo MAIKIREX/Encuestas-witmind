@@ -35,8 +35,10 @@ export default async function ConvocatoriaPage({ params }: PageProps<"/convocato
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const total = tests.reduce((acc: number, t: any) => acc + (t.tests?.time_limit_seconds ?? 0), 0);
 
+  const isAdmin = session?.role === "admin";
+
   let existingApplicationId: string | null = null;
-  if (session) {
+  if (session && !isAdmin) {
     // Un admin ve todas las filas por RLS; se filtra por su propio usuario
     // para no mostrarle la postulación de otro candidato como si fuera suya.
     const { data: app } = await supabase
@@ -49,80 +51,131 @@ export default async function ConvocatoriaPage({ params }: PageProps<"/convocato
   }
 
   return (
-    <>
+    <div className="relative min-h-screen flex flex-col overflow-hidden">
+      {/* Elementos ambientales de fondo */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-80 w-full max-w-4xl rounded-full bg-accent/40 blur-3xl -z-10"
+      />
+
       <SiteHeader />
 
-      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-12">
-        <Link href="/convocatorias" className="text-sm text-muted-foreground hover:underline">
+      <main className="mx-auto w-full max-w-3xl flex-1 px-4 sm:px-6 py-10 sm:py-14">
+        <Link
+          href="/convocatorias"
+          className="inline-flex items-center text-xs font-medium text-muted-foreground hover:text-primary transition-colors"
+        >
           ← Volver a convocatorias
         </Link>
 
-        <h1 className="mt-4 font-heading text-2xl font-medium">{job.title}</h1>
+        <h1 className="mt-4 font-heading text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+          {job.title}
+        </h1>
+        <div className="mt-2.5 mb-4 h-1 w-9 rounded-full bg-primary" />
 
-        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-2 text-xs">
           {job.location && (
-            <span className="flex items-center gap-1.5">
-              <MapPin className="size-3.5" />
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary/80 px-3 py-1 text-secondary-foreground font-medium">
+              <MapPin className="size-3" />
               {job.location}
             </span>
           )}
-          {job.employment_type && <span>{job.employment_type}</span>}
+          {job.employment_type && (
+            <span className="inline-flex items-center rounded-full bg-secondary/80 px-3 py-1 text-secondary-foreground font-medium">
+              {job.employment_type}
+            </span>
+          )}
           {total > 0 && (
-            <span className="flex items-center gap-1.5">
-              <Timer className="size-3.5" />
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-primary font-medium">
+              <Timer className="size-3" />
               Evaluación de {formatMinutes(total)}
             </span>
           )}
         </div>
 
-        <p className="mt-6 leading-relaxed whitespace-pre-line">{job.description}</p>
+        <div className="mt-8 rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-[0_12px_32px_-8px_rgba(11,43,64,0.06)]">
+          <h2 className="font-heading text-base font-bold text-foreground">Descripción del puesto</h2>
+          <p className="mt-3 leading-relaxed text-sm text-foreground/90 whitespace-pre-line">
+            {job.description}
+          </p>
+        </div>
 
-        <h2 className="mt-10 font-heading text-lg font-medium">La evaluación</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Se rinde en el orden indicado. Puedes pausar entre una prueba y otra, pero una vez que
-          inicias una prueba debes terminarla.
-        </p>
+        <div className="mt-10">
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+            batería de pruebas
+          </p>
+          <h2 className="mt-1 font-heading text-xl font-bold text-foreground">La evaluación</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Se rinde en el orden indicado. Puedes pausar entre una prueba y otra, pero una vez que
+            inicias una prueba debes terminarla.
+          </p>
+        </div>
 
-        <div className="mt-4 grid gap-3">
+        <div className="mt-5 grid gap-3">
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {tests.map((t: any, i: number) => (
-            <Card key={t.position} size="sm">
+            <Card key={t.position} size="sm" className="hover:border-primary/40 transition-colors">
               <CardHeader>
-                <CardTitle className="flex items-baseline gap-2">
-                  <span className="text-muted-foreground tabular-nums">{i + 1}.</span>
-                  {t.tests?.name}
-                  <span className="ml-auto text-sm font-normal text-muted-foreground">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <span className="flex size-6 items-center justify-center rounded-full bg-secondary text-xs font-bold text-muted-foreground">
+                    {i + 1}
+                  </span>
+                  <span>{t.tests?.name}</span>
+                  <span className="ml-auto inline-flex items-center rounded-full bg-secondary/60 px-2.5 py-0.5 text-xs text-muted-foreground">
                     {formatMinutes(t.tests?.time_limit_seconds)}
                   </span>
                 </CardTitle>
-                <CardDescription>{t.tests?.description}</CardDescription>
+                <CardDescription className="text-xs sm:text-sm pl-8">
+                  {t.tests?.description}
+                </CardDescription>
               </CardHeader>
             </Card>
           ))}
         </div>
 
-        <Card className="mt-10">
-          <CardContent>
-            {existingApplicationId ? (
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-sm text-muted-foreground">Ya postulaste a esta convocatoria.</p>
+        <Card className="mt-10 border-primary/20 bg-gradient-to-r from-accent/25 via-card to-card">
+          <CardContent className="p-6">
+            {isAdmin ? (
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <p className="font-semibold text-foreground">Vista de administrador</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Como administrador no postulas aquí. Para probar cómo vive un candidato cada
+                    prueba, ve al Banco de pruebas.
+                  </p>
+                </div>
+                <Button variant="outline" render={<Link href="/admin/tests" />}>
+                  Ir al banco de pruebas
+                </Button>
+              </div>
+            ) : existingApplicationId ? (
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <p className="font-semibold text-foreground">Ya postulaste a esta convocatoria</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Puedes continuar o consultar el estado de tu evaluación.
+                  </p>
+                </div>
                 <Button render={<Link href={`/postulaciones/${existingApplicationId}`} />}>
                   Continuar mi evaluación
                 </Button>
               </div>
             ) : (
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-sm text-muted-foreground">
-                  {session
-                    ? "Al postular se habilita tu evaluación."
-                    : "Necesitas una cuenta para postular."}
-                </p>
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <p className="font-semibold text-foreground">¿Listo para postular?</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {session
+                      ? "Al confirmar tu postulación se habilitará la batería de pruebas."
+                      : "Necesitas iniciar sesión o crear una cuenta para postular."}
+                  </p>
+                </div>
                 <ApplyButton jobId={job.id} jobSlug={job.slug} authenticated={Boolean(session)} />
               </div>
             )}
           </CardContent>
         </Card>
       </main>
-    </>
+    </div>
   );
 }

@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "import:raven": "npx --yes tsx scripts/import-raven.ts",
+    "import:wonderlic": "npx --yes tsx scripts/import-wonderlic.ts",
+    "import:ppg-ipg": "npx --yes tsx scripts/import-ppg-ipg.ts",
+    "import:liderazgo-193": "npx --yes tsx scripts/import-liderazgo-193.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

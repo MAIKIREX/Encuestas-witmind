@@ -44,3 +44,14 @@ next-env.d.ts
 # material de referencia (manuales de tests con derechos de terceros, no es
 # codigo de la app; algunos PDFs superan el limite de 100MB de GitHub)
 /docuemntacion
+
+# Material licenciado y clave de corrección de Raven: se usa localmente para importar.
+/raven-import/clave.json
+/raven-import/*_stem.png
+/raven-import/*_stem.jpg
+/raven-import/*_stem.jpeg
+/raven-import/*_stem.webp
+/raven-import/*_opt_*.png
+/raven-import/*_opt_*.jpg
+/raven-import/*_opt_*.jpeg
+/raven-import/*_opt_*.webp

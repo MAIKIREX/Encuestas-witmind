@@ -13,9 +13,9 @@ export default async function ActualizarContrasenaPage() {
   return (
     <>
       <SiteHeader />
-      <main className="mx-auto flex w-full max-w-md flex-1 items-center px-4 py-12">
-        <Card className="w-full">
-          <CardHeader>
+      <main className="auth-shell flex flex-1 items-center justify-center px-4 py-12">
+        <Card className="auth-card w-full max-w-md">
+          <CardHeader className="auth-card-header">
             <CardTitle className="text-lg">
               {session ? "Elige tu nueva contraseña" : "Enlace no válido"}
             </CardTitle>
@@ -29,7 +29,7 @@ export default async function ActualizarContrasenaPage() {
             {session ? (
               <UpdatePasswordForm />
             ) : (
-              <Link href="/recuperar" className="text-sm text-foreground underline underline-offset-4">
+              <Link href="/recuperar" className="text-sm font-medium text-primary underline-offset-4 hover:underline">
                 Solicitar un nuevo enlace
               </Link>
             )}

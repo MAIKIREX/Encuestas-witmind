@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import { sileo } from "sileo";
 
 import { createJob } from "@/app/actions/admin";
+import { type PickableTest, TestPicker } from "@/components/admin/test-picker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 type State = { error?: string; success?: boolean } | null;
 
-export function NewJobDialog({ assessments }: { assessments: { id: string; name: string }[] }) {
+export function NewJobDialog({ tests }: { tests: PickableTest[] }) {
   const [open, setOpen] = useState(false);
   const [state, formAction, pending] = useActionState<State, FormData>(createJob, null);
 
@@ -67,23 +68,12 @@ export function NewJobDialog({ assessments }: { assessments: { id: string; name:
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="assessmentId">Batería de evaluación</Label>
-            <select
-              id="assessmentId"
-              name="assessmentId"
-              required
-              defaultValue=""
-              className="h-8 rounded-lg border border-border bg-background px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-            >
-              <option value="" disabled>
-                Selecciona una batería
-              </option>
-              {assessments.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.name}
-                </option>
-              ))}
-            </select>
+            <Label>Pruebas que rendirá el postulante</Label>
+            <p className="text-xs text-muted-foreground">
+              Elige las pruebas que veas convenientes para este puesto. Cada una indica de qué
+              trata para ayudarte a decidir.
+            </p>
+            <TestPicker tests={tests} />
           </div>
 
           <div className="flex items-center gap-2">

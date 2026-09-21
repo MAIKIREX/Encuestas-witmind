@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Inter, Inter_Tight } from "next/font/google";
 
+import { PageTransitionProvider } from "@/components/page-transition";
 import { Toaster } from "@/components/toaster";
 
 import "./globals.css";
 import "sileo/styles.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const sans = Inter({
+  variable: "--font-sans",
+  subsets: ["latin"],
+});
+
+const heading = Inter_Tight({
+  variable: "--font-heading",
   subsets: ["latin"],
 });
 
@@ -29,10 +35,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${sans.variable} ${heading.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {children}
+        <PageTransitionProvider>
+          {children}
+        </PageTransitionProvider>
         <Toaster position="top-right" theme="system" />
       </body>
     </html>

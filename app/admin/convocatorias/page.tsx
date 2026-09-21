@@ -19,15 +19,23 @@ const STATUS_LABEL: Record<string, string> = {
 export default async function AdminConvocatoriasPage() {
   const supabase = await createClient();
 
-  const [{ data: jobs }, { data: assessments }] = await Promise.all([
+  const [{ data: jobs }, { data: tests }] = await Promise.all([
     supabase
       .from("job_postings")
       .select("id, slug, title, status, published_at, created_at, assessments(name)")
+      .eq("is_internal", false)
       .order("created_at", { ascending: false }),
-    supabase.from("assessments").select("id, name").eq("is_active", true).order("name"),
+    supabase
+      .from("tests")
+      .select("id, name, description, time_limit_seconds")
+      .eq("is_active", true)
+      .order("name"),
   ]);
 
-  const { data: counts } = await supabase.from("applications").select("job_posting_id, status");
+  const { data: counts } = await supabase
+    .from("applications")
+    .select("job_posting_id, status")
+    .eq("is_test", false);
 
   const byJob = new Map<string, { total: number; completed: number }>();
   for (const a of counts ?? []) {
@@ -41,12 +49,12 @@ export default async function AdminConvocatoriasPage() {
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="font-heading text-2xl font-medium">Convocatorias</h1>
+          <h1 className="font-heading text-2xl font-semibold">Convocatorias</h1>
           <p className="mt-1 text-muted-foreground">
             Publica una convocatoria para que los candidatos puedan postular y rendir su batería.
           </p>
         </div>
-        <NewJobDialog assessments={assessments ?? []} />
+        <NewJobDialog tests={tests ?? []} />
       </div>
 
       {!jobs?.length ? (

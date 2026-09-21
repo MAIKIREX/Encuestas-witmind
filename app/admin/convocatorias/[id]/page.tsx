@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { EditJobTests } from "@/components/admin/edit-job-tests";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,7 +24,9 @@ export default async function AdminJobPage({ params }: PageProps<"/admin/convoca
 
   const { data: job } = await supabase
     .from("job_postings")
-    .select("id, title, status, assessments(name, assessment_tests(position, tests(id, name)))")
+    .select(
+      "id, title, status, assessment_id, assessments(name, assessment_tests(position, tests(id, name)))",
+    )
     .eq("id", id)
     .maybeSingle();
 
@@ -35,10 +38,17 @@ export default async function AdminJobPage({ params }: PageProps<"/admin/convoca
     (a: any, b: any) => a.position - b.position,
   );
 
+  const { data: allTests } = await supabase
+    .from("tests")
+    .select("id, name, description, time_limit_seconds")
+    .eq("is_active", true)
+    .order("name");
+
   const { data: applications } = await supabase
     .from("applications")
     .select("id, candidate_id, status, applied_at, completed_at")
     .eq("job_posting_id", id)
+    .eq("is_test", false)
     .order("applied_at", { ascending: false });
 
   const candidateIds = [...new Set((applications ?? []).map((a) => a.candidate_id))];
@@ -80,8 +90,14 @@ export default async function AdminJobPage({ params }: PageProps<"/admin/convoca
     row.percentByTest.set(at.test_id, score?.percent ?? null);
     row.totalSeconds += at.duration_seconds ?? 0;
     if (at.status === "scored") row.scoredCount += 1;
-    if (at.integrity_level === "critical") row.worstIntegrity = "critical";
-    else if (at.integrity_level === "warn" && row.worstIntegrity !== "critical")
+    if (at.status === "disqualified") row.worstIntegrity = "disqualified";
+    else if (at.integrity_level === "critical" && row.worstIntegrity !== "disqualified")
+      row.worstIntegrity = "critical";
+    else if (
+      at.integrity_level === "warn" &&
+      row.worstIntegrity !== "disqualified" &&
+      row.worstIntegrity !== "critical"
+    )
       row.worstIntegrity = "warn";
     rows.set(at.application_id, row);
   }
@@ -106,11 +122,32 @@ export default async function AdminJobPage({ params }: PageProps<"/admin/convoca
         ← Volver a convocatorias
       </Link>
 
-      <h1 className="mt-4 font-heading text-2xl font-medium">{job.title}</h1>
+      <h1 className="mt-4 font-heading text-2xl font-semibold">{job.title}</h1>
       <p className="mt-1 text-muted-foreground">
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         {(job.assessments as any)?.name} · {applications?.length ?? 0} postulantes
       </p>
+
+      {job.status === "draft" && (
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Pruebas de esta convocatoria</CardTitle>
+            <CardDescription>
+              Selecciona las que veas convenientes para el puesto; cada una incluye una breve
+              explicación para ayudarte a decidir. Solo puedes cambiarlas mientras esté en
+              borrador.
+            </CardDescription>
+          </CardHeader>
+          <div className="px-(--card-spacing) pb-(--card-spacing)">
+            <EditJobTests
+              jobId={job.id}
+              tests={allTests ?? []}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              selectedIds={batteryTests.map((t: any) => t.tests?.id).filter(Boolean)}
+            />
+          </div>
+        </Card>
+      )}
 
       {!applications?.length ? (
         <Card className="mt-8">
@@ -174,7 +211,7 @@ export default async function AdminJobPage({ params }: PageProps<"/admin/convoca
                   <TableCell>
                     <Badge
                       variant={
-                        row?.worstIntegrity === "critical"
+                        row?.worstIntegrity === "disqualified" || row?.worstIntegrity === "critical"
                           ? "destructive"
                           : row?.worstIntegrity === "warn"
                             ? "outline"
