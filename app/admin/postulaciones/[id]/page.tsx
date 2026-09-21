@@ -1,0 +1,278 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+
+import { ApplicationDecision } from "@/components/admin/application-decision";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import {
+  applicationStatusLabel,
+  formatDate,
+  formatDateTime,
+  formatDuration,
+  integrityLabel,
+} from "@/lib/format";
+import { createClient } from "@/lib/supabase/server";
+
+export const metadata = { title: "Informe del candidato" };
+
+const EVENT_LABEL: Record<string, string> = {
+  tab_hidden: "Cambió de pestaña",
+  window_blur: "Salió de la ventana",
+  fullscreen_exit: "Salió de pantalla completa",
+  copy: "Intentó copiar",
+  paste: "Intentó pegar",
+  contextmenu: "Abrió el menú contextual",
+  devtools: "Abrió herramientas de desarrollo",
+  heartbeat_gap: "Se desconectó durante la prueba",
+};
+
+export default async function InformePage({ params }: PageProps<"/admin/postulaciones/[id]">) {
+  const { id } = await params;
+  const supabase = await createClient();
+
+  const { data: application } = await supabase
+    .from("applications")
+    .select("id, candidate_id, status, applied_at, completed_at, job_postings(id, title)")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!application) notFound();
+
+  const [{ data: profile }, { data: attempts }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("full_name, doc_number, phone")
+      .eq("id", application.candidate_id)
+      .maybeSingle(),
+    supabase
+      .from("test_attempts")
+      .select(
+        "id, status, started_at, submitted_at, duration_seconds, integrity_level, events_warn, events_critical, tests(name, slug, description), attempt_scores(raw_score, max_score, percent, percentile, band, norm_n)",
+      )
+      .eq("application_id", id)
+      .order("started_at", { ascending: true }),
+  ]);
+
+  const attemptIds = (attempts ?? []).map((a) => a.id);
+
+  const [{ data: subscales }, { data: events }] = await Promise.all([
+    attemptIds.length
+      ? supabase
+          .from("attempt_subscale_scores")
+          .select("attempt_id, raw_score, max_score, percent, band, test_subscales(code, name, display_order)")
+          .in("attempt_id", attemptIds)
+      : Promise.resolve({ data: [] }),
+    attemptIds.length
+      ? supabase
+          .from("proctoring_events")
+          .select("attempt_id, event_type, severity, server_ts")
+          .in("attempt_id", attemptIds)
+      : Promise.resolve({ data: [] }),
+  ]);
+
+  const subsByAttempt = new Map<string, typeof subscales>();
+  for (const s of subscales ?? []) {
+    const list = subsByAttempt.get(s.attempt_id) ?? [];
+    list.push(s);
+    subsByAttempt.set(s.attempt_id, list);
+  }
+
+  const eventCounts = new Map<string, Map<string, number>>();
+  for (const e of events ?? []) {
+    const perAttempt = eventCounts.get(e.attempt_id) ?? new Map<string, number>();
+    perAttempt.set(e.event_type, (perAttempt.get(e.event_type) ?? 0) + 1);
+    eventCounts.set(e.attempt_id, perAttempt);
+  }
+
+  const totalSeconds = (attempts ?? []).reduce((acc, a) => acc + (a.duration_seconds ?? 0), 0);
+  const percents = (attempts ?? [])
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .map((a) => (a.attempt_scores as any)?.percent)
+    .filter((p): p is number => p !== null && p !== undefined);
+  const avg = percents.length
+    ? Math.round(percents.reduce((a, b) => a + b, 0) / percents.length)
+    : null;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const job = application.job_postings as any;
+
+  return (
+    <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-10">
+      <Link
+        href={`/admin/convocatorias/${job?.id}`}
+        className="text-sm text-muted-foreground hover:underline"
+      >
+        ← Volver a candidatos
+      </Link>
+
+      <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="font-heading text-2xl font-medium">
+            {profile?.full_name || "Candidato sin nombre"}
+          </h1>
+          <p className="mt-1 text-muted-foreground">
+            {job?.title} · Postuló el {formatDate(application.applied_at)}
+          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+            {profile?.doc_number && <span>Doc. {profile.doc_number}</span>}
+            {profile?.phone && <span>Tel. {profile.phone}</span>}
+            <Badge variant="outline">{applicationStatusLabel(application.status)}</Badge>
+          </div>
+        </div>
+
+        <ApplicationDecision applicationId={application.id} status={application.status} />
+      </div>
+
+      <div className="mt-8 grid gap-4 sm:grid-cols-3">
+        <Card size="sm">
+          <CardHeader>
+            <CardDescription>Promedio general</CardDescription>
+            <CardTitle className="text-2xl tabular-nums">
+              {avg === null ? "—" : `${avg}%`}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        <Card size="sm">
+          <CardHeader>
+            <CardDescription>Tiempo total</CardDescription>
+            <CardTitle className="text-2xl tabular-nums">
+              {totalSeconds ? formatDuration(totalSeconds) : "—"}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        <Card size="sm">
+          <CardHeader>
+            <CardDescription>Pruebas completadas</CardDescription>
+            <CardTitle className="text-2xl tabular-nums">
+              {(attempts ?? []).filter((a) => a.status === "scored").length} de{" "}
+              {attempts?.length ?? 0}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+      </div>
+
+      <h2 className="mt-10 font-heading text-lg font-medium">Resultado por prueba</h2>
+
+      {!attempts?.length ? (
+        <Card className="mt-4">
+          <CardHeader>
+            <CardTitle>Sin pruebas rendidas</CardTitle>
+            <CardDescription>El candidato aún no ha iniciado la evaluación.</CardDescription>
+          </CardHeader>
+        </Card>
+      ) : (
+        <div className="mt-4 grid gap-4">
+          {attempts.map((attempt) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const test = attempt.tests as any;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const score = attempt.attempt_scores as any;
+            const subs = [...(subsByAttempt.get(attempt.id) ?? [])].sort(
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (a: any, b: any) =>
+                (a.test_subscales?.display_order ?? 0) - (b.test_subscales?.display_order ?? 0),
+            );
+            const evts = eventCounts.get(attempt.id);
+
+            return (
+              <Card key={attempt.id}>
+                <CardHeader>
+                  <CardTitle className="flex flex-wrap items-center gap-2">
+                    {test?.name}
+                    {score?.band && <Badge variant="secondary">{score.band}</Badge>}
+                    <span className="ml-auto text-2xl tabular-nums">
+                      {score?.percent !== null && score?.percent !== undefined
+                        ? `${score.percent}%`
+                        : "—"}
+                    </span>
+                  </CardTitle>
+                  <CardDescription>
+                    {score
+                      ? `${score.raw_score} de ${score.max_score} puntos`
+                      : "Prueba no calificada"}
+                    {" · "}
+                    Tiempo: {formatDuration(attempt.duration_seconds)}
+                    {attempt.submitted_at && ` · Enviada el ${formatDateTime(attempt.submitted_at)}`}
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent className="grid gap-4">
+                  {score?.percentile !== null && score?.percentile !== undefined ? (
+                    <p className="text-sm text-muted-foreground">
+                      Percentil {score.percentile} respecto de {score.norm_n} candidatos que
+                      rindieron esta prueba.
+                    </p>
+                  ) : (
+                    score && (
+                      <p className="text-sm text-muted-foreground">
+                        Percentil no disponible: se necesitan más candidatos para construir una
+                        norma confiable ({score.norm_n ?? 0} hasta ahora).
+                      </p>
+                    )
+                  )}
+
+                  {subs.length > 0 && (
+                    <>
+                      <Separator />
+                      <div className="grid gap-3">
+                        <p className="text-sm font-medium">Desglose por área</p>
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                        {subs.map((s: any) => (
+                          <div key={s.test_subscales?.code} className="grid gap-1.5">
+                            <div className="flex items-baseline justify-between gap-3 text-sm">
+                              <span>{s.test_subscales?.name}</span>
+                              <span className="text-muted-foreground tabular-nums">
+                                {s.raw_score}/{s.max_score} · {s.percent}%
+                                {s.band && ` · ${s.band}`}
+                              </span>
+                            </div>
+                            <Progress value={Number(s.percent) || 0} />
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+
+                  <Separator />
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge
+                      variant={
+                        attempt.integrity_level === "critical"
+                          ? "destructive"
+                          : attempt.integrity_level === "warn"
+                            ? "outline"
+                            : "secondary"
+                      }
+                    >
+                      {integrityLabel(attempt.integrity_level)}
+                    </Badge>
+
+                    {evts && evts.size > 0 ? (
+                      <span className="text-sm text-muted-foreground">
+                        {[...evts.entries()]
+                          .map(([type, n]) => `${EVENT_LABEL[type] ?? type} (${n})`)
+                          .join(" · ")}
+                      </span>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">
+                        No se registraron incidencias.
+                      </span>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      )}
+
+      <p className="mt-8 text-xs text-muted-foreground">
+        Las señales de integridad son indicios, no prueba de irregularidad. Conviene contrastarlas
+        con el candidato antes de tomar una decisión.
+      </p>
+    </main>
+  );
+}

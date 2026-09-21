@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -39,3 +40,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# material de referencia (manuales de tests con derechos de terceros, no es
+# codigo de la app; algunos PDFs superan el limite de 100MB de GitHub)
+/docuemntacion
