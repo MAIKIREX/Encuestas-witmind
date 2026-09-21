@@ -9,19 +9,19 @@ import { createClient } from "@/lib/supabase/server";
 
 const STEPS = [
   {
-    icon: ClipboardList,
+    icon: <ClipboardList className="size-5" />,
     step: "01",
     title: "Postula a una convocatoria",
     body: "Revisa las vacantes abiertas, lee el perfil y postula con tu cuenta. El proceso toma menos de un minuto.",
   },
   {
-    icon: Timer,
+    icon: <Timer className="size-5" />,
     step: "02",
     title: "Rinde tu evaluación",
     body: "Cada convocatoria tiene una batería de pruebas que se rinden en orden. Puedes pausar entre pruebas a tu propio ritmo.",
   },
   {
-    icon: FileSearch,
+    icon: <FileSearch className="size-5" />,
     step: "03",
     title: "Revisión objetiva del perfil",
     body: "Tus respuestas se procesan con baremos estandarizados y el equipo de selección revisa tus resultados en tiempo real.",

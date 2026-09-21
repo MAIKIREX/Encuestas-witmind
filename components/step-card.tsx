@@ -1,17 +1,16 @@
 "use client";
 
-import { useId } from "react";
-import type { LucideIcon } from "lucide-react";
+import { useId, type ReactNode } from "react";
 
 interface StepCardProps {
-  icon: LucideIcon;
+  icon: ReactNode;
   step: string;
   title: string;
   body: string;
   index: number;
 }
 
-export function StepCard({ icon: Icon, step, title, body, index }: StepCardProps) {
+export function StepCard({ icon, step, title, body, index }: StepCardProps) {
   const gradientId = useId();
   const accentGradientId = useId();
 
@@ -116,7 +115,7 @@ export function StepCard({ icon: Icon, step, title, body, index }: StepCardProps
         <div className="relative z-10 flex items-center justify-between px-6 pt-5">
           {/* Badge del ícono con soporte interactivo */}
           <div className="flex size-11 items-center justify-center rounded-2xl bg-white/12 text-white border border-white/20 backdrop-blur-xs shadow-sm group-hover:bg-primary group-hover:border-primary group-hover:text-primary-foreground group-hover:scale-105 group-hover:shadow-[0_8px_20px_-4px_rgba(242,101,34,0.45)] transition-all duration-300">
-            <Icon className="size-5" />
+            {icon}
           </div>
 
           {/* Número de paso en píldora translúcida */}
