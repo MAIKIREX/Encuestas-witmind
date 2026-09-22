@@ -4,6 +4,7 @@ import { ArrowLeft, ShieldAlert, Sparkles } from "lucide-react";
 
 import { signAdminMediaPaths } from "@/app/actions/media";
 import { ItemBank, type AdminItem, type Subscale } from "@/components/admin/item-bank";
+import { TestTimingForm } from "@/components/admin/test-timing-form";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = { title: "Preguntas de la prueba · Administración" };
@@ -14,7 +15,7 @@ export default async function AdminTestDetailPage({ params }: PageProps<"/admin/
 
   const { data: test } = await supabase
     .from("tests")
-    .select("id, name, description, source, scoring_strategy, test_subscales(id, code, name, display_order)")
+    .select("id, name, description, source, scoring_strategy, is_timed, time_limit_seconds, test_subscales(id, code, name, display_order)")
     .eq("id", id)
     .maybeSingle();
 
@@ -80,6 +81,12 @@ export default async function AdminTestDetailPage({ params }: PageProps<"/admin/
           </div>
         </div>
       )}
+
+      <TestTimingForm
+        initialTimeLimitSeconds={test.time_limit_seconds}
+        isTimed={test.is_timed}
+        testId={test.id}
+      />
 
       <ItemBank
         testId={test.id}

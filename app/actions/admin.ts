@@ -14,6 +14,22 @@ const jobSchema = z.object({
   testIds: z.array(z.string().uuid()).min(1, "Selecciona al menos una prueba"),
 });
 
+const testTimingSchema = z
+  .object({
+    testId: z.string().uuid(),
+    isTimed: z.boolean(),
+    timeLimitMinutes: z.number().int().min(1).max(240).nullable(),
+  })
+  .superRefine((value, context) => {
+    if (value.isTimed && value.timeLimitMinutes === null) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["timeLimitMinutes"],
+        message: "Indica el límite de tiempo en minutos.",
+      });
+    }
+  });
+
 function slugify(text: string) {
   return text
     .normalize("NFD")
@@ -140,6 +156,35 @@ export async function setJobStatus(jobId: string, status: "draft" | "published" 
 
   revalidatePath("/admin/convocatorias");
   revalidatePath("/convocatorias");
+  return { success: true };
+}
+
+export async function updateTestTiming(
+  testId: string,
+  input: { isTimed: boolean; timeLimitMinutes: number | null },
+) {
+  await requireAdmin();
+
+  const parsed = testTimingSchema.safeParse({ testId, ...input });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Los datos de tiempo no son válidos." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("tests")
+    .update({
+      is_timed: parsed.data.isTimed,
+      time_limit_seconds: parsed.data.isTimed
+        ? parsed.data.timeLimitMinutes! * 60
+        : null,
+    })
+    .eq("id", parsed.data.testId);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin/tests");
+  revalidatePath(`/admin/tests/${testId}`);
   return { success: true };
 }
 

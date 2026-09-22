@@ -41,14 +41,13 @@ export default async function EvaluacionPage({ params }: PageProps<"/evaluacion/
 
   // Un admin ve cualquier intento por RLS; se exige que sea propio para que
   // esta vista de candidato nunca deje rendir o ver el intento de otra persona.
-  const [{ data: attempt }, { data: profile }] = await Promise.all([
+  const [{ data: attempt }] = await Promise.all([
     supabase
       .from("test_attempts")
       .select("id, application_id, status, tests(scoring_config), applications!inner(candidate_id)")
       .eq("id", attemptId)
       .eq("applications.candidate_id", session.user.id)
       .maybeSingle(),
-    supabase.from("profiles").select("full_name").eq("id", session.user.id).maybeSingle(),
   ]);
 
   if (!attempt) notFound();
@@ -61,14 +60,11 @@ export default async function EvaluacionPage({ params }: PageProps<"/evaluacion/
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const config = (attempt.tests as any)?.scoring_config ?? {};
   const likertLabels = (config.likert_labels ?? []) as LikertLabel[];
-  const identity = `${profile?.full_name || "Candidato"} · ${session.user.email}`;
-
   return (
     <Runner
       state={state}
       likertLabels={likertLabels}
       applicationId={attempt.application_id}
-      identity={identity}
     />
   );
 }

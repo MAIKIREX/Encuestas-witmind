@@ -107,7 +107,7 @@ export default async function AdminConvocatoriasPage() {
   return (
     <main className="mx-auto w-full max-w-7xl flex-1 px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
       {/* Encabezado con estética táctil */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-white/10">
+      <div className="pb-8 border-b border-white/10">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/40 border border-white/15 backdrop-blur-md mb-3">
             <Sparkles className="size-3.5 text-[#d9a771]" />
@@ -124,9 +124,11 @@ export default async function AdminConvocatoriasPage() {
             rendirán automáticamente las baterías asignadas a cada perfil.
           </p>
         </div>
-        <div className="shrink-0">
-          <NewJobDialog tests={tests ?? []} />
-        </div>
+      </div>
+
+      {/* El formulario ocupa su propia fila: nunca comprime el encabezado ni se abre a su lado. */}
+      <div className="mt-8 mx-auto w-full max-w-5xl">
+        <NewJobDialog tests={tests ?? []} />
       </div>
 
       {/* Listado de tarjetas horizontales táctiles bien distribuidas */}

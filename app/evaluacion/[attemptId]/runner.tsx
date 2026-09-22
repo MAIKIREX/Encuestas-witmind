@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { WatermarkOverlay } from "@/components/watermark-overlay";
 import { clockFromSeconds } from "@/lib/format";
 import { createClient } from "@/lib/supabase/client";
 import type { AttemptItem, AttemptState, LikertLabel, ProctorEvent } from "@/lib/supabase/types";
@@ -66,12 +65,10 @@ export function Runner({
   state,
   likertLabels,
   applicationId,
-  identity,
 }: {
   state: AttemptState;
   likertLabels: LikertLabel[];
   applicationId: string;
-  identity: string;
 }) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
@@ -385,7 +382,6 @@ export function Runner({
         className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-80 w-full max-w-3xl rounded-full bg-accent/35 blur-3xl -z-10"
       />
 
-      <WatermarkOverlay identity={identity} />
       <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-4 sm:px-6 py-8 sm:py-12">
         <header className="grid gap-3.5 rounded-3xl border border-border/70 bg-card p-5 sm:p-6 shadow-[0_10px_30px_-10px_rgba(11,43,64,0.06)]">
           <div className="flex items-center justify-between gap-4">
