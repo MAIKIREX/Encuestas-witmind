@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
 
 import { ApplicationDecision } from "@/components/admin/application-decision";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +15,7 @@ import {
   integrityLabel,
 } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
+import type { AttemptResponse, TestItem, TestItemOption } from "@/lib/supabase/types";
 
 export const metadata = { title: "Informe del candidato" };
 
@@ -27,6 +29,66 @@ const EVENT_LABEL: Record<string, string> = {
   devtools: "Abrió herramientas de desarrollo",
   heartbeat_gap: "Se desconectó durante la prueba",
 };
+
+type LikertLabel = { value: number; label: string };
+
+function likertLabelsFromConfig(config: unknown): LikertLabel[] {
+  if (!config || typeof config !== "object" || Array.isArray(config)) return [];
+
+  const labels = (config as { likert_labels?: unknown }).likert_labels;
+  if (!Array.isArray(labels)) return [];
+
+  return labels.filter(
+    (label): label is LikertLabel =>
+      typeof label === "object" &&
+      label !== null &&
+      "value" in label &&
+      "label" in label &&
+      typeof label.value === "number" &&
+      typeof label.label === "string",
+  );
+}
+
+function responseContent(
+  response: AttemptResponse | undefined,
+  item: TestItem,
+  options: TestItemOption[],
+  likertLabels: LikertLabel[],
+): ReactNode {
+  if (!response) return <span className="text-muted-foreground">Sin respuesta registrada</span>;
+
+  const optionLabel = (id: string | null) =>
+    id ? options.find((option) => option.id === id)?.label ?? "Opción no disponible" : null;
+
+  if (item.item_type === "forced_choice") {
+    return (
+      <div className="grid gap-1.5">
+        <p>
+          <span className="font-medium">Más se identifica: </span>
+          {optionLabel(response.option_id) ?? "Sin respuesta registrada"}
+        </p>
+        {response.least_option_id && (
+          <p>
+            <span className="font-medium">Menos se identifica: </span>
+            {optionLabel(response.least_option_id)}
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  if (item.item_type === "free_response") {
+    const value = response.value_text ?? response.value_numeric?.toString();
+    return value ? <span className="whitespace-pre-wrap">{value}</span> : "Sin respuesta registrada";
+  }
+
+  if (item.item_type === "likert") {
+    const label = likertLabels.find((entry) => entry.value === response.value_numeric)?.label;
+    return label ? `${label} (${response.value_numeric})` : `Valor seleccionado: ${response.value_numeric ?? "—"}`;
+  }
+
+  return optionLabel(response.option_id) ?? "Sin respuesta registrada";
+}
 
 export default async function InformePage({ params }: PageProps<"/admin/postulaciones/[id]">) {
   const { id } = await params;
@@ -49,15 +111,16 @@ export default async function InformePage({ params }: PageProps<"/admin/postulac
     supabase
       .from("test_attempts")
       .select(
-        "id, status, started_at, submitted_at, duration_seconds, integrity_level, events_warn, events_critical, integrity_strikes, disqualification_reason, tests(name, slug, description, scoring_strategy), attempt_scores(raw_score, max_score, percent, percentile, band, norm_n)",
+        "id, test_id, status, started_at, submitted_at, duration_seconds, integrity_level, events_warn, events_critical, integrity_strikes, disqualification_reason, tests(name, slug, description, scoring_strategy, scoring_config), attempt_scores(raw_score, max_score, percent, percentile, band, norm_n)",
       )
       .eq("application_id", id)
       .order("started_at", { ascending: true }),
   ]);
 
   const attemptIds = (attempts ?? []).map((a) => a.id);
+  const testIds = [...new Set((attempts ?? []).map((a) => a.test_id))];
 
-  const [{ data: subscales }, { data: events }] = await Promise.all([
+  const [{ data: subscales }, { data: events }, { data: responses }, { data: items }] = await Promise.all([
     attemptIds.length
       ? supabase
           .from("attempt_subscale_scores")
@@ -70,7 +133,29 @@ export default async function InformePage({ params }: PageProps<"/admin/postulac
           .select("attempt_id, event_type, severity, server_ts")
           .in("attempt_id", attemptIds)
       : Promise.resolve({ data: [] }),
+    attemptIds.length
+      ? supabase
+          .from("attempt_responses")
+          .select("attempt_id, item_id, option_id, value_numeric, value_text, least_option_id, answered_at, client_elapsed_ms, revisions")
+          .in("attempt_id", attemptIds)
+      : Promise.resolve({ data: [] }),
+    testIds.length
+      ? supabase
+          .from("test_items")
+          .select("id, test_id, position, item_type, stem, media_url, subscale_id, time_limit_seconds, config, is_active")
+          .in("test_id", testIds)
+          .order("position", { ascending: true })
+      : Promise.resolve({ data: [] }),
   ]);
+
+  const itemIds = (items ?? []).map((item) => item.id);
+  const { data: options } = itemIds.length
+    ? await supabase
+        .from("test_item_options")
+        .select("id, item_id, code, label, media_url, display_order")
+        .in("item_id", itemIds)
+        .order("display_order", { ascending: true })
+    : { data: [] };
 
   const subsByAttempt = new Map<string, typeof subscales>();
   for (const s of subscales ?? []) {
@@ -84,6 +169,27 @@ export default async function InformePage({ params }: PageProps<"/admin/postulac
     const perAttempt = eventCounts.get(e.attempt_id) ?? new Map<string, number>();
     perAttempt.set(e.event_type, (perAttempt.get(e.event_type) ?? 0) + 1);
     eventCounts.set(e.attempt_id, perAttempt);
+  }
+
+  const responsesByAttempt = new Map<string, Map<string, AttemptResponse>>();
+  for (const response of responses ?? []) {
+    const perAttempt = responsesByAttempt.get(response.attempt_id) ?? new Map<string, AttemptResponse>();
+    perAttempt.set(response.item_id, response);
+    responsesByAttempt.set(response.attempt_id, perAttempt);
+  }
+
+  const itemsByTest = new Map<string, TestItem[]>();
+  for (const item of items ?? []) {
+    const perTest = itemsByTest.get(item.test_id) ?? [];
+    perTest.push(item);
+    itemsByTest.set(item.test_id, perTest);
+  }
+
+  const optionsByItem = new Map<string, TestItemOption[]>();
+  for (const option of options ?? []) {
+    const perItem = optionsByItem.get(option.item_id) ?? [];
+    perItem.push(option);
+    optionsByItem.set(option.item_id, perItem);
   }
 
   const totalSeconds = (attempts ?? []).reduce((acc, a) => acc + (a.duration_seconds ?? 0), 0);
@@ -175,6 +281,9 @@ export default async function InformePage({ params }: PageProps<"/admin/postulac
                 (a.test_subscales?.display_order ?? 0) - (b.test_subscales?.display_order ?? 0),
             );
             const evts = eventCounts.get(attempt.id);
+            const testItems = itemsByTest.get(attempt.test_id) ?? [];
+            const attemptResponses = responsesByAttempt.get(attempt.id) ?? new Map<string, AttemptResponse>();
+            const answeredCount = testItems.filter((item) => attemptResponses.has(item.id)).length;
             // Elección forzada (PPG-IPG, Test de Liderazgo): la lectura del
             // resultado es "cuál subescala saca el puntaje más alto", no un
             // total general — se resalta la subescala dominante.
@@ -294,6 +403,39 @@ export default async function InformePage({ params }: PageProps<"/admin/postulac
                     <p className="text-sm text-muted-foreground">
                       {attempt.disqualification_reason}
                     </p>
+                  )}
+
+                  {testItems.length > 0 && (
+                    <>
+                      <Separator />
+                      <details className="group rounded-lg border bg-muted/20 p-4">
+                        <summary className="cursor-pointer list-none font-medium marker:hidden">
+                          <span className="flex flex-wrap items-center justify-between gap-2">
+                            <span>Respuestas del candidato</span>
+                            <span className="text-sm font-normal text-muted-foreground">
+                              {answeredCount} de {testItems.length} respondidas
+                            </span>
+                          </span>
+                        </summary>
+                        <div className="mt-4 grid gap-3">
+                          {testItems.map((item, index) => (
+                            <div key={item.id} className="rounded-md border bg-background p-3 text-sm">
+                              <p className="font-medium">
+                                {index + 1}. {item.stem}
+                              </p>
+                              <div className="mt-2 text-muted-foreground">
+                                {responseContent(
+                                  attemptResponses.get(item.id),
+                                  item,
+                                  optionsByItem.get(item.id) ?? [],
+                                  likertLabelsFromConfig((test as { scoring_config?: unknown } | null)?.scoring_config),
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </details>
+                    </>
                   )}
                 </CardContent>
               </Card>

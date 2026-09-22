@@ -102,7 +102,7 @@ export function StartTestButton({
             Esta prueba necesita saber tu sexo para aplicar el baremo correcto.
           </Label>
           <RadioGroup
-            value={gender ?? undefined}
+            value={gender}
             onValueChange={(v) => setGender(v as "M" | "F")}
             className="flex items-center gap-4"
           >

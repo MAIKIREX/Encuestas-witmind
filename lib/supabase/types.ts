@@ -152,6 +152,40 @@ export type AttemptSubscaleScore = {
   band: string | null;
 };
 
+export type AttemptResponse = {
+  attempt_id: string;
+  item_id: string;
+  option_id: string | null;
+  value_numeric: number | null;
+  value_text: string | null;
+  least_option_id: string | null;
+  answered_at: string;
+  client_elapsed_ms: number | null;
+  revisions: number;
+};
+
+export type TestItem = {
+  id: string;
+  test_id: string;
+  position: number;
+  item_type: ItemType;
+  stem: string;
+  media_url: string | null;
+  subscale_id: string | null;
+  time_limit_seconds: number | null;
+  config: Json;
+  is_active: boolean;
+};
+
+export type TestItemOption = {
+  id: string;
+  item_id: string;
+  code: string;
+  label: string;
+  media_url: string | null;
+  display_order: number;
+};
+
 export type ProctoringEventRow = {
   id: number;
   attempt_id: string;
@@ -219,9 +253,12 @@ export type Database = {
       job_postings: Row<JobPosting>;
       applications: Row<Application>;
       test_attempts: Row<TestAttempt>;
+      attempt_responses: Row<AttemptResponse>;
       attempt_scores: Row<AttemptScore>;
       attempt_subscale_scores: Row<AttemptSubscaleScore>;
       proctoring_events: Row<ProctoringEventRow>;
+      test_items: Row<TestItem>;
+      test_item_options: Row<TestItemOption>;
     };
     Views: Record<never, never>;
     Functions: {
