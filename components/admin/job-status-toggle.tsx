@@ -9,9 +9,11 @@ import { Button } from "@/components/ui/button";
 export function JobStatusToggle({
   jobId,
   status,
+  className,
 }: {
   jobId: string;
   status: "draft" | "published" | "closed";
+  className?: string;
 }) {
   const [pending, startTransition] = useTransition();
 
@@ -23,6 +25,7 @@ export function JobStatusToggle({
       size="sm"
       variant="outline"
       disabled={pending}
+      className={className}
       onClick={() =>
         startTransition(async () => {
           const result = await setJobStatus(jobId, next);

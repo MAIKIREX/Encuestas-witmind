@@ -30,17 +30,20 @@ export function NewJobDialog({ tests }: { tests: PickableTest[] }) {
 
   if (!open) {
     return (
-      <Button onClick={() => setOpen(true)}>
-        <Plus data-icon="inline-start" />
+      <Button
+        onClick={() => setOpen(true)}
+        className="h-11 px-6 rounded-full bg-gradient-to-r from-[#ba5e30] to-[#8c3f19] text-white font-semibold text-sm shadow-[0_10px_25px_-5px_rgba(186,94,48,0.6),inset_0_1px_1px_rgba(255,255,255,0.3)] hover:from-[#ce6d3d] hover:to-[#ba5e30] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+      >
+        <Plus className="size-4 mr-1.5" />
         Nueva convocatoria
       </Button>
     );
   }
 
   return (
-    <Card className="w-full">
+    <Card className="w-full tactile-card-forest border-white/20 p-2 sm:p-4">
       <CardHeader>
-        <CardTitle>Nueva convocatoria</CardTitle>
+        <CardTitle className="text-xl font-bold text-white">Nueva convocatoria</CardTitle>
       </CardHeader>
 
       <CardContent>

@@ -6,7 +6,13 @@ import { sileo } from "sileo";
 import { startTestPreview } from "@/app/actions/applications";
 import { Button } from "@/components/ui/button";
 
-export function TestModeButton({ testId }: { testId: string }) {
+export function TestModeButton({
+  testId,
+  className,
+}: {
+  testId: string;
+  className?: string;
+}) {
   const [pending, startTransition] = useTransition();
 
   return (
@@ -14,6 +20,7 @@ export function TestModeButton({ testId }: { testId: string }) {
       size="sm"
       variant="outline"
       disabled={pending}
+      className={className}
       onClick={() =>
         startTransition(async () => {
           const result = await startTestPreview(testId);

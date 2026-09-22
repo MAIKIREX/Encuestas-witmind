@@ -26,39 +26,67 @@ export async function uploadItemMedia(formData: FormData) {
   if (!ext) return { error: "Formato no soportado. Usa PNG, JPG o WebP." };
   if (file.size > MAX_BYTES) return { error: "La imagen no puede superar 5 MB." };
 
-  const path = `items/${randomUUID()}.${ext}`;
-  const supabase = createServiceClient();
-  const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
-    contentType: file.type,
-    upsert: false,
-  });
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return { error: "Falta configurar SUPABASE_SERVICE_ROLE_KEY en las variables de entorno." };
+  }
 
-  if (error) return { error: "No se pudo subir la imagen." };
-  return { path };
+  const path = `items/${randomUUID()}.${ext}`;
+  try {
+    const supabase = createServiceClient();
+    const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
+      contentType: file.type,
+      upsert: false,
+    });
+
+    if (error) return { error: "No se pudo subir la imagen." };
+    return { path };
+  } catch {
+    return { error: "Error de configuración al conectar con el servicio de almacenamiento." };
+  }
 }
 
 export async function getMediaPreviewUrl(path: string) {
   await requireAdmin();
 
-  const supabase = createServiceClient();
-  const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(path, 300);
-  if (error || !data) return { error: "No se pudo generar la vista previa." };
-  return { url: data.signedUrl };
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return { error: "Falta configurar SUPABASE_SERVICE_ROLE_KEY en las variables de entorno." };
+  }
+
+  try {
+    const supabase = createServiceClient();
+    const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(path, 300);
+    if (error || !data) return { error: "No se pudo generar la vista previa." };
+    return { url: data.signedUrl };
+  } catch {
+    return { error: "Error al generar la vista previa." };
+  }
 }
 
 async function signPaths(paths: string[]) {
   const unique = [...new Set(paths)];
   if (unique.length === 0) return {} as Record<string, string>;
 
-  const supabase = createServiceClient();
-  const { data, error } = await supabase.storage.from(BUCKET).createSignedUrls(unique, 3600);
-  if (error || !data) return {} as Record<string, string>;
-
-  const map: Record<string, string> = {};
-  for (const entry of data) {
-    if (entry.path && entry.signedUrl) map[entry.path] = entry.signedUrl;
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.warn(
+      "[media.ts] SUPABASE_SERVICE_ROLE_KEY no está configurada. Las imágenes no se podrán visualizar hasta agregar la variable en .env.",
+    );
+    return {} as Record<string, string>;
   }
-  return map;
+
+  try {
+    const supabase = createServiceClient();
+    const { data, error } = await supabase.storage.from(BUCKET).createSignedUrls(unique, 3600);
+    if (error || !data) return {} as Record<string, string>;
+
+    const map: Record<string, string> = {};
+    for (const entry of data) {
+      if (entry.path && entry.signedUrl) map[entry.path] = entry.signedUrl;
+    }
+    return map;
+  } catch (err) {
+    console.error("[media.ts] Error al firmar paths de medios:", err);
+    return {} as Record<string, string>;
+  }
 }
 
 // Firma en lote los `media_url` (paths del bucket) que llegan en el estado de
