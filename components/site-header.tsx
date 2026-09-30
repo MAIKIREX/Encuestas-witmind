@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ClipboardCheck, LogOut } from "lucide-react";
 
 import { signOut } from "@/app/actions/auth";
+import { MobileNav } from "@/components/mobile-nav";
 import { Button } from "@/components/ui/button";
 import { getSession } from "@/lib/dal";
 
@@ -10,7 +11,7 @@ export async function SiteHeader() {
 
   return (
     <header className="sticky top-3 z-50 w-full px-4 sm:px-6 pointer-events-none">
-      <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between gap-4 px-4 sm:px-6 rounded-full bg-[#0d241a]/85 backdrop-blur-xl border border-white/10 shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6)] pointer-events-auto transition-all">
+      <div className="relative mx-auto flex h-14 w-full max-w-5xl items-center justify-between gap-4 px-4 sm:px-6 rounded-full bg-[#0d241a]/85 backdrop-blur-xl border border-white/10 shadow-[0_16px_36px_-8px_rgba(0,0,0,0.6)] pointer-events-auto transition-all">
         <Link
           href="/"
           className="group flex items-center gap-2.5 font-heading text-base font-bold tracking-tight text-foreground transition-opacity hover:opacity-90"
@@ -25,7 +26,7 @@ export async function SiteHeader() {
           </div>
         </Link>
 
-        <nav className="flex items-center gap-1 sm:gap-2">
+        <nav className="hidden items-center gap-1 md:flex sm:gap-2">
           <Button
             variant="ghost"
             size="sm"
@@ -84,6 +85,8 @@ export async function SiteHeader() {
             </>
           )}
         </nav>
+
+        <MobileNav role={session?.role ?? null} />
       </div>
     </header>
   );

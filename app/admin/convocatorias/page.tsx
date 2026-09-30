@@ -179,7 +179,7 @@ export default async function AdminConvocatoriasPage() {
                       </span>
                     </div>
 
-                    <h2 className="mt-1 text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-snug group-hover:text-[#d9a771] transition-colors truncate">
+                    <h2 className="mt-1 text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-snug group-hover:text-[#d9a771] transition-colors line-clamp-2 break-words">
                       <Link href={`/admin/convocatorias/${job.id}`}>
                         {job.title}
                       </Link>
@@ -188,7 +188,7 @@ export default async function AdminConvocatoriasPage() {
                     <div className="mt-2.5 flex flex-wrap items-center gap-2">
                       <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 border border-white/12 text-xs text-[#e5d8cc]">
                         <Brain className="size-3.5 text-[#d9a771] shrink-0" />
-                        <span className="truncate max-w-[280px] font-medium">
+                        <span className="truncate max-w-[200px] sm:max-w-[280px] font-medium">
                           {assessmentName ?? "Sin batería asignada"}
                         </span>
                       </div>
@@ -197,8 +197,8 @@ export default async function AdminConvocatoriasPage() {
                 </div>
 
                 {/* 2. SECCIÓN CENTRAL: Micro-Métricas de Postulantes y Evaluados */}
-                <div className="flex items-center gap-3 sm:gap-4 shrink-0 lg:px-6 lg:border-x lg:border-white/10">
-                  <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-black/35 border border-white/10 backdrop-blur-xs min-w-[125px]">
+                <div className="grid grid-cols-2 lg:flex items-center gap-3 sm:gap-4 lg:shrink-0 lg:px-6 lg:border-x lg:border-white/10">
+                  <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-black/35 border border-white/10 backdrop-blur-xs lg:min-w-[125px] min-w-0">
                     <div className="size-9 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
                       <Users className="size-4 text-[#d9a771]" />
                     </div>
@@ -212,7 +212,7 @@ export default async function AdminConvocatoriasPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-black/35 border border-white/10 backdrop-blur-xs min-w-[125px]">
+                  <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-black/35 border border-white/10 backdrop-blur-xs lg:min-w-[125px] min-w-0">
                     <div className="size-9 rounded-xl bg-emerald-950/60 border border-emerald-500/20 flex items-center justify-center shrink-0">
                       <CheckCircle2 className="size-4 text-emerald-400" />
                     </div>
@@ -228,7 +228,7 @@ export default async function AdminConvocatoriasPage() {
                 </div>
 
                 {/* 3. SECCIÓN DERECHA: Estado + Acciones */}
-                <div className="flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-3 shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-white/10">
+                <div className="flex flex-col sm:flex-row lg:flex-col items-stretch sm:items-center lg:items-end justify-between lg:justify-center gap-3 lg:shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-white/10">
                   <span
                     className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold border backdrop-blur-xs ${statusInfo.badgeVariant}`}
                   >
@@ -238,7 +238,7 @@ export default async function AdminConvocatoriasPage() {
                     {statusInfo.label}
                   </span>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Button
                       size="sm"
                       className="h-9 px-4 rounded-full bg-gradient-to-r from-[#ba5e30] to-[#8c3f19] text-white font-semibold text-xs shadow-[0_8px_18px_-4px_rgba(186,94,48,0.6),inset_0_1px_1px_rgba(255,255,255,0.3)] hover:from-[#ce6d3d] hover:to-[#ba5e30] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5"

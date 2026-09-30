@@ -134,7 +134,7 @@ export default async function ConvocatoriasPage() {
                         </div>
                       </div>
 
-                      <h2 className="mt-1 text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-snug group-hover:text-[#d9a771] transition-colors truncate">
+                      <h2 className="mt-1 text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-snug group-hover:text-[#d9a771] transition-colors line-clamp-2 break-words">
                         <Link href={`/convocatorias/${job.slug}`}>
                           {job.title}
                         </Link>
@@ -149,7 +149,7 @@ export default async function ConvocatoriasPage() {
                       {assessmentName && (
                         <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 border border-white/12 text-xs text-[#e5d8cc]">
                           <Brain className="size-3.5 text-[#d9a771] shrink-0" />
-                          <span className="truncate max-w-[280px] font-medium">{assessmentName}</span>
+                          <span className="truncate max-w-[200px] sm:max-w-[280px] font-medium">{assessmentName}</span>
                         </div>
                       )}
                     </div>
