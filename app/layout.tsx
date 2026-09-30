@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 
+import { SITE_URL } from "@/lib/site";
 import { Toaster } from "@/components/toaster";
 
 import "./globals.css";
@@ -24,6 +25,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Evalua - witmind — Plataforma de evaluación psicométrica",
     template: "%s · Evalua - witmind",
