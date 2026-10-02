@@ -8,6 +8,8 @@ import { sileo } from "sileo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { FigureTrace } from "@/components/evaluation/figure-trace";
+import { PiecePicker } from "@/components/evaluation/piece-picker";
 import { Progress } from "@/components/ui/progress";
 import { clockFromSeconds } from "@/lib/format";
 import { createClient } from "@/lib/supabase/client";
@@ -61,6 +63,16 @@ function isAnswerable(answer: Answer | null, item: AttemptItem | undefined) {
   return answer.optionId !== null || answer.value !== null;
 }
 
+function interactionOf(item: AttemptItem | undefined) {
+  if (item?.type !== "free_response") return null;
+  const config = item.config;
+  if (config?.interaction === "line_trace" && config.viewBox && config.points?.length) return "line_trace";
+  if (config?.interaction === "pick_pieces" && config.pieces?.length && config.cell && config.pick) {
+    return "pick_pieces";
+  }
+  return null;
+}
+
 export function Runner({
   state,
   likertLabels,
@@ -106,7 +118,14 @@ export function Runner({
   const itemShownAt = useRef(0);
 
   const current = items[index];
+  const interaction = interactionOf(current);
   const isLast = index === items.length - 1;
+
+  // Los widgets interactivos reportan una respuesta canonica, o null mientras
+  // la seleccion esta incompleta (el boton "Siguiente" sigue deshabilitado).
+  function setAnswerText(text: string | null) {
+    setSelected(text ? { optionId: null, value: null, valueText: text, leastOptionId: null } : null);
+  }
   const doneCount = answers.size;
   const progress = items.length ? Math.round((doneCount / items.length) * 100) : 0;
 
@@ -437,11 +456,12 @@ export function Runner({
           </CardHeader>
 
           <CardContent className="grid gap-2">
-            {current.media_url && (
+            {current.media_url && !interaction && (
               <FadeImage
                 src={current.media_url}
                 alt="Lámina de la pregunta"
-                className="mx-auto mb-2 h-72 w-full max-w-sm"
+                ratio={current.config?.mediaRatio}
+                className={`mx-auto mb-2 w-full max-w-sm ${current.config?.mediaRatio ? "" : "h-72"}`}
               />
             )}
 
@@ -455,17 +475,33 @@ export function Runner({
                 />
               ))
             ) : current.type === "mcq_image" ? (
-              <div className="grid grid-cols-4 gap-2">
-                {current.options.map((o) => (
+              <div
+                className={`grid gap-2 ${current.config?.numberOptions ? "grid-cols-3 sm:grid-cols-5" : "grid-cols-4"}`}
+              >
+                {current.options.map((o, i) => (
                   <ImageChoiceButton
                     key={o.id}
                     label={o.label}
                     mediaUrl={o.media_url}
+                    badge={current.config?.numberOptions ? i + 1 : undefined}
                     active={selected?.optionId === o.id}
                     onClick={() => setSelected({ optionId: o.id, value: null, valueText: null, leastOptionId: null })}
                   />
                 ))}
               </div>
+            ) : interaction === "line_trace" && current.config?.viewBox && current.config.points ? (
+              <FigureTrace
+                viewBox={current.config.viewBox}
+                points={current.config.points}
+                onChange={(text) => setAnswerText(text)}
+              />
+            ) : interaction === "pick_pieces" && current.config?.pieces && current.config.cell ? (
+              <PiecePicker
+                pieces={current.config.pieces}
+                cell={current.config.cell}
+                pick={current.config.pick ?? 1}
+                onChange={(text) => setAnswerText(text)}
+              />
             ) : current.type === "free_response" ? (
               <Input
                 type="text"
@@ -638,11 +674,13 @@ function ForcedChoiceRow({
 function ImageChoiceButton({
   label,
   mediaUrl,
+  badge,
   active,
   onClick,
 }: {
   label: string;
   mediaUrl: string | null;
+  badge?: number;
   active: boolean;
   onClick: () => void;
 }) {
@@ -651,15 +689,28 @@ function ImageChoiceButton({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      aria-label={label}
-      className={`grid place-items-center rounded-2xl border p-3 transition-all shadow-xs ${
+      aria-label={badge ? `Figura ${badge}` : label}
+      className={`relative grid place-items-center rounded-2xl border p-3 transition-all shadow-xs ${
         active
           ? "border-primary bg-primary/10 ring-1 ring-primary/40"
           : "border-border/70 bg-card hover:bg-secondary/60"
       }`}
     >
+      {badge !== undefined && (
+        <span
+          className={`absolute left-2 top-2 z-10 grid size-5 place-items-center rounded-full text-[11px] font-bold tabular-nums ${
+            active ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground/80"
+          }`}
+        >
+          {badge}
+        </span>
+      )}
       {mediaUrl ? (
-        <FadeImage src={mediaUrl} alt={label} className="aspect-square w-full max-w-24" />
+        <FadeImage
+          src={mediaUrl}
+          alt={badge ? `Figura ${badge}` : label}
+          className={`aspect-square w-full ${badge !== undefined ? "max-w-28" : "max-w-24"}`}
+        />
       ) : (
         <span className="text-sm text-muted-foreground font-medium">{label}</span>
       )}
@@ -670,11 +721,24 @@ function ImageChoiceButton({
 // Imagen con esqueleto mientras carga y aparicion suave al terminar, para que
 // el cambio de pregunta no se sienta brusco ni parezca que algo se rompio
 // mientras la miniatura todavia esta llegando.
-function FadeImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
+function FadeImage({
+  src,
+  alt,
+  className,
+  ratio,
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+  ratio?: string;
+}) {
   const [loaded, setLoaded] = useState(false);
 
   return (
-    <span className={`relative block overflow-hidden rounded-2xl border border-border/70 ${className ?? ""}`}>
+    <span
+      className={`relative block overflow-hidden rounded-2xl border border-border/70 ${className ?? ""}`}
+      style={ratio ? { aspectRatio: ratio } : undefined}
+    >
       <span
         aria-hidden
         className={`absolute inset-0 animate-pulse bg-muted/40 transition-opacity duration-300 ${loaded ? "opacity-0" : "opacity-100"}`}

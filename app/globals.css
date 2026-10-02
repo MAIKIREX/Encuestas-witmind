@@ -118,6 +118,19 @@
   --sidebar-ring: #d9a771;
 }
 
+@keyframes draw-line {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@utility animate-draw-line {
+  animation: draw-line 0.35s ease-out both;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

@@ -204,11 +204,28 @@ export type AttemptItemOption = {
   media_url: string | null;
 };
 
+export type TracePoint = { n: number; x: number; y: number };
+export type PiecePoint = { x: number; y: number };
+
+// Presentacion/interaccion especial de un item. Solo lleva geometria y opciones
+// de UI: la clave de respuesta nunca viaja al cliente.
+export type ItemConfig = {
+  interaction?: "line_trace" | "pick_pieces";
+  viewBox?: [number, number, number, number];
+  points?: TracePoint[];
+  pick?: number;
+  cell?: [number, number];
+  pieces?: { n: number; points: PiecePoint[] }[];
+  mediaRatio?: string;
+  numberOptions?: boolean;
+};
+
 export type AttemptItem = {
   id: string;
   type: ItemType;
   stem: string;
   media_url: string | null;
+  config?: ItemConfig | null;
   options: AttemptItemOption[];
 };
 
