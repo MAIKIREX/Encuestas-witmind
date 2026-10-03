@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { ApplicationDecision } from "@/components/admin/application-decision";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
@@ -228,7 +229,15 @@ export default async function InformePage({ params }: PageProps<"/admin/postulac
           </div>
         </div>
 
-        <ApplicationDecision applicationId={application.id} status={application.status} />
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            render={<a href={`/admin/postulaciones/${application.id}/export`} download />}
+          >
+            Descargar cuestionario (.md)
+          </Button>
+          <ApplicationDecision applicationId={application.id} status={application.status} />
+        </div>
       </div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
