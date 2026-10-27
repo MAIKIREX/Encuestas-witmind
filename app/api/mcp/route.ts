@@ -1,24 +1,13 @@
 // Endpoint MCP remoto (Streamable HTTP, sin sesion) para conectar Claude a la
 // plataforma desplegada: https://<dominio>/api/mcp
 //
-// Protegido con `Authorization: Bearer <MCP_API_TOKEN>`. Si MCP_API_TOKEN no esta
-// configurado, el endpoint queda deshabilitado (404).
+// Protegido con `Authorization: Bearer <token>`: un token creado en Admin → MCP
+// o el token de respaldo MCP_API_TOKEN configurado en el servidor.
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
-import { createHash, timingSafeEqual } from "node:crypto";
 
+import { isAuthorizedMcpRequest } from "@/lib/mcp/auth";
 import { createPlatformMcpServer } from "@/lib/mcp/tools";
 import { createServiceClient } from "@/lib/supabase/service";
-
-function digest(value: string) {
-  return createHash("sha256").update(value).digest();
-}
-
-function isAuthorized(request: Request, token: string) {
-  const header = request.headers.get("authorization") ?? "";
-  const provided = header.startsWith("Bearer ") ? header.slice("Bearer ".length).trim() : "";
-  // Se comparan hashes para que timingSafeEqual reciba buffers del mismo largo.
-  return provided.length > 0 && timingSafeEqual(digest(provided), digest(token));
-}
 
 function jsonRpcError(status: number, message: string, headers?: HeadersInit) {
   return Response.json(
@@ -28,9 +17,7 @@ function jsonRpcError(status: number, message: string, headers?: HeadersInit) {
 }
 
 async function handle(request: Request) {
-  const token = process.env.MCP_API_TOKEN;
-  if (!token) return jsonRpcError(404, "MCP no está habilitado en este servidor.");
-  if (!isAuthorized(request, token)) {
+  if (!(await isAuthorizedMcpRequest(request))) {
     return jsonRpcError(401, "No autorizado.", { "WWW-Authenticate": "Bearer" });
   }
 

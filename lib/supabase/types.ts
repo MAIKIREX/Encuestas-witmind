@@ -253,6 +253,17 @@ export type AttemptState = {
   >;
 };
 
+export type McpToken = {
+  id: string;
+  name: string;
+  token_hash: string;
+  token_prefix: string;
+  created_by: string | null;
+  created_at: string;
+  last_used_at: string | null;
+  revoked_at: string | null;
+};
+
 export type LikertLabel = { value: number; label: string };
 export type ScoringBand = { min: number; max: number; label: string };
 
@@ -276,6 +287,7 @@ export type Database = {
       proctoring_events: Row<ProctoringEventRow>;
       test_items: Row<TestItem>;
       test_item_options: Row<TestItemOption>;
+      mcp_tokens: Row<McpToken>;
     };
     Views: Record<never, never>;
     Functions: {
