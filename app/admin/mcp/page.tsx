@@ -7,6 +7,7 @@ import {
   RevokeMcpTokenButton,
 } from "@/components/admin/mcp-tokens";
 import { formatDateTime } from "@/lib/format";
+import { SITE_URL } from "@/lib/site";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = { title: "MCP · Administración" };
@@ -22,11 +23,16 @@ const TOOLS = [
   { name: "get_job_summary", description: "Postulaciones por estado y promedio por prueba de una convocatoria." },
 ];
 
+// Claude exige https. Se prefiere el dominio publico configurado; si no existe,
+// se usa el host de la peticion forzando https salvo en desarrollo local, porque
+// detras del proxy de Coolify la peticion puede llegar como http (ej. sslip.io).
 async function endpointUrl() {
+  if (process.env.NEXT_PUBLIC_SITE_URL) return `${SITE_URL}/api/mcp`;
+
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
-  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
-  return `${proto}://${host}/api/mcp`;
+  const isLocal = /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(host);
+  return `${isLocal ? "http" : "https"}://${host}/api/mcp`;
 }
 
 export default async function AdminMcpPage() {
