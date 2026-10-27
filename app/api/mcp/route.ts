@@ -1,11 +1,13 @@
 // Endpoint MCP remoto (Streamable HTTP, sin sesion) para conectar Claude a la
 // plataforma desplegada: https://<dominio>/api/mcp
 //
-// Protegido con `Authorization: Bearer <token>`: un token creado en Admin → MCP
-// o el token de respaldo MCP_API_TOKEN configurado en el servidor.
+// Protegido con `Authorization: Bearer <token>`: un token creado en Admin → MCP,
+// el token de respaldo MCP_API_TOKEN, o un access token OAuth de un admin
+// (conectores de claude.ai, ver lib/mcp/oauth.ts).
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 
 import { isAuthorizedMcpRequest } from "@/lib/mcp/auth";
+import { publicOrigin, RESOURCE_METADATA_PATH } from "@/lib/mcp/oauth";
 import { createPlatformMcpServer } from "@/lib/mcp/tools";
 import { createServiceClient } from "@/lib/supabase/service";
 
@@ -18,7 +20,11 @@ function jsonRpcError(status: number, message: string, headers?: HeadersInit) {
 
 async function handle(request: Request) {
   if (!(await isAuthorizedMcpRequest(request))) {
-    return jsonRpcError(401, "No autorizado.", { "WWW-Authenticate": "Bearer" });
+    // `resource_metadata` le indica al cliente MCP donde iniciar el flujo OAuth.
+    const metadataUrl = `${publicOrigin(request)}${RESOURCE_METADATA_PATH}`;
+    return jsonRpcError(401, "No autorizado.", {
+      "WWW-Authenticate": `Bearer resource_metadata="${metadataUrl}"`,
+    });
   }
 
   // Modo sin estado: un servidor y un transporte nuevos por peticion.

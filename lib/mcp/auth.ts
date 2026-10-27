@@ -2,6 +2,7 @@ import "server-only";
 
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 
+import { isAdminAccessToken } from "@/lib/mcp/oauth";
 import { createServiceClient } from "@/lib/supabase/service";
 
 const TOKEN_PREFIX = "mcp_";
@@ -29,8 +30,9 @@ function equalsEnvToken(provided: string, envToken: string) {
   );
 }
 
-// Acepta el token de respaldo MCP_API_TOKEN (Coolify) o un token activo de la
-// tabla `mcp_tokens` creado desde Admin → MCP.
+// Acepta, en orden: el token de respaldo MCP_API_TOKEN (Coolify), un token activo
+// de la tabla `mcp_tokens` creado desde Admin → MCP, o un access token OAuth de
+// Supabase de un administrador (conectores de claude.ai).
 export async function isAuthorizedMcpRequest(request: Request) {
   const provided = bearer(request);
   if (!provided) return false;
@@ -38,7 +40,7 @@ export async function isAuthorizedMcpRequest(request: Request) {
   const envToken = process.env.MCP_API_TOKEN;
   if (envToken && equalsEnvToken(provided, envToken)) return true;
 
-  if (!provided.startsWith(TOKEN_PREFIX)) return false;
+  if (!provided.startsWith(TOKEN_PREFIX)) return isAdminAccessToken(provided);
 
   const db = createServiceClient();
   const { data, error } = await db
