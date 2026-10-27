@@ -116,7 +116,7 @@ export function StartTestButton({
         </div>
       )}
 
-      <label className="mt-4 flex cursor-pointer items-start gap-2.5 rounded-xl bg-background/30 p-3 text-xs leading-relaxed text-foreground">
+      <label className="mt-4 flex cursor-pointer items-start gap-2.5 rounded-xl bg-black/25 p-3 text-xs leading-relaxed text-foreground">
         <Checkbox
           checked={rulesAccepted}
           onCheckedChange={(checked) => setRulesAccepted(checked === true)}

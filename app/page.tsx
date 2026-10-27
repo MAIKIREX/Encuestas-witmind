@@ -54,7 +54,7 @@ export default async function HomePage() {
       {/* =========================================================================
           HERO A PANTALLA COMPLETA (FULL-WINDOW EDGE-TO-EDGE) CON VIDEO DE FONDO
           ========================================================================= */}
-      <section className="relative w-full min-h-screen sm:min-h-[100dvh] flex flex-col justify-between overflow-hidden bg-black">
+      <section className="relative w-full min-h-[100dvh] flex flex-col justify-between overflow-hidden bg-black">
         {/* 1. Video de fondo garantizado a pantalla completa */}
         <HeroBackgroundVideo />
 
@@ -74,7 +74,7 @@ export default async function HomePage() {
               </h1>
 
               {/* Divisor en relieve con colores de la referencia */}
-              <div className="mt-4 mb-4 h-1.5 w-14 rounded-full bg-gradient-to-r from-[#ba5e30] to-[#d9a771] shadow-[0_2px_10px_rgba(217,167,113,0.5)]" />
+              <div className="mt-4 mb-4 h-1.5 w-14 rounded-full bg-gradient-to-r from-[#b0512a] to-[#d9a771] shadow-[0_2px_10px_rgba(217,167,113,0.5)]" />
 
               <p className="text-base sm:text-lg text-[#f0e4d7] leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] max-w-lg">
                 Postula a nuestras convocatorias y rinde tus evaluaciones en línea de forma ágil, transparente y con resultados objetivos.
@@ -84,7 +84,7 @@ export default async function HomePage() {
               <div className="mt-7 flex flex-wrap items-center gap-3.5">
                 <Button
                   size="lg"
-                  className="h-12 px-7 rounded-full bg-gradient-to-r from-[#ba5e30] to-[#8c3f19] text-white font-semibold text-sm sm:text-base shadow-[0_14px_30px_-6px_rgba(186,94,48,0.7),inset_0_1px_1px_rgba(255,255,255,0.4)] hover:from-[#ce6d3d] hover:to-[#ba5e30] hover:scale-[1.02] active:scale-[0.98] transition-all"
+                  className="h-12 px-7 rounded-full bg-gradient-to-r from-[#b0512a] to-[#8c3f19] text-white font-semibold text-sm sm:text-base shadow-[0_14px_30px_-6px_rgba(176,81,42,0.7),inset_0_1px_1px_rgba(255,255,255,0.4)] hover:from-[#c05f33] hover:to-[#b0512a] hover:scale-[1.02] active:scale-[0.98] transition-all"
                   render={<Link href="/convocatorias" />}
                 >
                   Ver convocatorias
@@ -119,12 +119,6 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* 4. Indicador sutil de scroll hacia las baterías de evaluación */}
-        <div className="relative z-10 pb-6 text-center">
-          <span className="text-[11px] font-mono tracking-widest uppercase text-[#d9a771]/80 animate-bounce block">
-            ↓ Explora las evaluaciones
-          </span>
-        </div>
       </section>
 
       <main className="flex-1 w-full relative z-10">
@@ -132,7 +126,7 @@ export default async function HomePage() {
         {/* =========================================================================
             BARRA PANORÁMICA Y REJILLA TÁCTIL DE 6 TARJETAS (ESTILO IMAGEN DE REFERENCIA)
             ========================================================================= */}
-        <section className="relative w-full px-4 sm:px-6 lg:px-8 pb-16 sm:pb-20">
+        <section className="relative w-full px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 pb-8 sm:pb-12">
           <div className="mx-auto w-full max-w-6xl flex flex-col items-center">
             
             {/* 1. BARRA PANORÁMICA SUPERIOR (CÁPSULA HORIZONTAL DE LA IMAGEN) */}
@@ -253,7 +247,7 @@ export default async function HomePage() {
                 <span className="mt-2.5 text-xs font-bold text-[#2d1708] tracking-tight">
                   Liderazgo
                 </span>
-                <span className="text-[10px] text-[#4d2910]">Test 193</span>
+                <span className="text-[10px] text-[#2d1708]">Test 193</span>
               </div>
 
             </div>
@@ -264,13 +258,13 @@ export default async function HomePage() {
         {/* =========================================================================
             BATERÍAS DE EVALUACIÓN
             ========================================================================= */}
-        <section className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-          <div className="text-center max-w-xl mx-auto mb-10">
+        <section className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+          <div className="text-center max-w-xl mx-auto mb-12 sm:mb-14">
             <h2 className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-white">
               Baterías de evaluación
             </h2>
-            <div className="mx-auto mt-2.5 h-1 w-12 rounded-full bg-[#ba5e30]" />
-            <p className="mt-2.5 text-sm sm:text-base text-[#e5d8cc]">
+            <div className="mx-auto mt-3 h-1 w-12 rounded-full bg-[#b0512a]" />
+            <p className="mt-4 text-sm sm:text-base text-[#e5d8cc]">
               Pruebas psicométricas y de razonamiento calibradas para cada área de trabajo.
             </p>
           </div>
@@ -283,11 +277,11 @@ export default async function HomePage() {
                 <div className="tactile-inset-badge size-12 mb-4 bg-black/45 text-[#d9a771]">
                   <Target className="size-6" />
                 </div>
-                <div className="text-[10px] font-mono font-semibold uppercase tracking-wider text-[#d9a771]">
+                <div className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#d9a771]">
                   Razonamiento Abstracto
                 </div>
                 <h3 className="mt-1 text-lg font-bold text-white">Matrices de Raven</h3>
-                <p className="mt-2.5 text-xs text-[#d4c1b0] leading-relaxed">
+                <p className="mt-3 text-sm text-[#d4c1b0] leading-relaxed">
                   Evalúa la capacidad de deducción lógica, identificación de patrones visuales y
                   habilidad analítica independiente del idioma o nivel cultural.
                 </p>
@@ -304,11 +298,11 @@ export default async function HomePage() {
                 <div className="tactile-inset-badge size-12 mb-4 bg-black/45 text-white">
                   <Calculator className="size-6" />
                 </div>
-                <div className="text-[10px] font-mono font-semibold uppercase tracking-wider text-[#e5be8d]">
+                <div className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#e5be8d]">
                   Agilidad Cognitiva
                 </div>
                 <h3 className="mt-1 text-lg font-bold text-white">Wonderlic & Matemáticas</h3>
-                <p className="mt-2.5 text-xs text-white/90 leading-relaxed">
+                <p className="mt-3 text-sm text-white/90 leading-relaxed">
                   Mide la rapidez en resolución de problemas aritméticos, series lógicas y comprensión
                   cuantitativa bajo límite de tiempo controlado.
                 </p>
@@ -325,11 +319,11 @@ export default async function HomePage() {
                 <div className="tactile-inset-badge size-12 mb-4 bg-white/20 text-white">
                   <Layers className="size-6" />
                 </div>
-                <div className="text-[10px] font-mono font-semibold uppercase tracking-wider text-white">
+                <div className="text-[11px] font-mono font-semibold uppercase tracking-wider text-white">
                   Comportamiento Laboral
                 </div>
                 <h3 className="mt-1 text-lg font-bold text-white">Perfil PPG-IPG</h3>
-                <p className="mt-2.5 text-xs text-white/90 leading-relaxed">
+                <p className="mt-3 text-sm text-white/90 leading-relaxed">
                   Diagnostica factores de personalidad: ascendencia, responsabilidad, estabilidad emocional,
                   sociabilidad, cautela y relaciones interpersonales.
                 </p>
@@ -346,11 +340,11 @@ export default async function HomePage() {
                 <div className="tactile-inset-badge size-12 mb-4 bg-[#633918]/55 text-[#fcfaf5]">
                   <Compass className="size-6" />
                 </div>
-                <div className="text-[10px] font-mono font-semibold uppercase tracking-wider text-[#3d200e]">
+                <div className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#3d200e]">
                   Juicio y Dirección
                 </div>
                 <h3 className="mt-1 text-lg font-bold text-[#1f1006]">Cuestionario Liderazgo</h3>
-                <p className="mt-2.5 text-xs text-[#3d200e]/90 leading-relaxed">
+                <p className="mt-3 text-sm text-[#2d1708] leading-relaxed">
                   Analiza el estilo de toma de decisiones, resolución de contingencias, delegación
                   y liderazgo situacional frente a escenarios laborales reales.
                 </p>
@@ -367,13 +361,13 @@ export default async function HomePage() {
         {/* =========================================================================
             CÓMO FUNCIONA EL PROCESO DE EVALUACIÓN
             ========================================================================= */}
-        <section className="mx-auto w-full max-w-5xl px-4 sm:px-6 py-12 sm:py-16">
-          <div className="text-center max-w-xl mx-auto mb-10">
+        <section className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+          <div className="text-center max-w-xl mx-auto mb-12 sm:mb-14">
             <h2 className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-white">
               ¿Cómo funciona?
             </h2>
-            <div className="mx-auto mt-2 h-1 w-10 rounded-full bg-[#ba5e30]" />
-            <p className="mt-2.5 text-sm text-[#d4c1b0]">
+            <div className="mx-auto mt-3 h-1 w-12 rounded-full bg-[#b0512a]" />
+            <p className="mt-4 text-sm sm:text-base text-[#e5d8cc]">
               Tres pasos simples para completar tu postulación y evaluación.
             </p>
           </div>
@@ -395,7 +389,7 @@ export default async function HomePage() {
         {/* =========================================================================
             BANNER CTA INFERIOR
             ========================================================================= */}
-        <section className="mx-auto w-full max-w-5xl px-4 sm:px-6 pb-20">
+        <section className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 pb-20 sm:pb-28">
           <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#123826] via-[#0d261b] to-[#431c0a] border border-white/18 p-8 sm:p-12 text-center shadow-[0_30px_70px_-15px_rgba(0,0,0,0.85)]">
             <div
               aria-hidden="true"
@@ -412,7 +406,7 @@ export default async function HomePage() {
             <div className="relative z-10 mt-8 flex flex-wrap justify-center items-center gap-4">
               <Button
                 size="lg"
-                className="h-12 px-8 rounded-full bg-gradient-to-r from-[#ba5e30] to-[#8c3f19] text-white font-semibold shadow-[0_10px_25px_-5px_rgba(186,94,48,0.6)] hover:from-[#ce6d3d] hover:to-[#ba5e30]"
+                className="h-12 px-8 rounded-full bg-gradient-to-r from-[#b0512a] to-[#8c3f19] text-white font-semibold shadow-[0_10px_25px_-5px_rgba(176,81,42,0.6)] hover:from-[#c05f33] hover:to-[#b0512a]"
                 render={<Link href="/convocatorias" />}
               >
                 Ver todas las vacantes
@@ -426,16 +420,15 @@ export default async function HomePage() {
 
       {/* FOOTER */}
       <footer className="border-t border-white/12 py-10 bg-[#381406]/90 backdrop-blur-md">
-        <div className="mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 w-full max-w-5xl px-4 sm:px-6 text-xs text-[#d4c1b0]">
+        <div className="mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 w-full max-w-6xl px-4 sm:px-6 lg:px-8 text-xs text-[#d4c1b0]">
           <div className="flex items-center gap-2">
             <span className="font-heading font-bold text-white tracking-tight">Evalua - witmind</span>
-            <span>— plataforma de evaluación psicométrica para selección de talento.</span>
+            <span>Plataforma de evaluación psicométrica para selección de talento.</span>
           </div>
           <div className="flex items-center gap-5">
             <Link href="/convocatorias" className="hover:text-white transition-colors">
               Convocatorias
             </Link>
-            <span>·</span>
             <Link href="/login" className="hover:text-white transition-colors">
               Ingreso postulantes
             </Link>

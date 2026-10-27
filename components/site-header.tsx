@@ -17,7 +17,7 @@ export async function SiteHeader() {
           className="group flex items-center gap-2.5 font-heading text-base font-bold tracking-tight text-foreground transition-opacity hover:opacity-90"
         >
           {/* Isotipo con relieve tridimensional táctil estilo referencia */}
-          <div className="flex size-8 items-center justify-center rounded-xl bg-gradient-to-br from-[#ba5e30] to-[#7c3b1d] text-white shadow-[0_4px_12px_-2px_rgba(186,94,48,0.5),inset_0_1px_1px_rgba(255,255,255,0.3)] transition-transform group-hover:scale-105">
+          <div className="flex size-8 items-center justify-center rounded-xl bg-gradient-to-br from-[#b0512a] to-[#7c3b1d] text-white shadow-[0_4px_12px_-2px_rgba(176,81,42,0.5),inset_0_1px_1px_rgba(255,255,255,0.3)] transition-transform group-hover:scale-105">
             <ClipboardCheck className="size-4 text-white" />
           </div>
           <div className="flex items-baseline gap-1.5">
@@ -77,7 +77,7 @@ export async function SiteHeader() {
               </Button>
               <Button
                 size="sm"
-                className="rounded-full text-xs font-semibold bg-primary text-primary-foreground shadow-[0_6px_20px_-4px_rgba(186,94,48,0.5)] hover:bg-[#ce6d3d]"
+                className="rounded-full text-xs font-semibold bg-primary text-primary-foreground shadow-[0_6px_20px_-4px_rgba(176,81,42,0.5)] hover:bg-[#c05f33]"
                 render={<Link href="/registro" />}
               >
                 Crear cuenta

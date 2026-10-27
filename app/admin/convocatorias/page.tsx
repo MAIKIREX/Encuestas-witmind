@@ -105,20 +105,20 @@ export default async function AdminConvocatoriasPage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl flex-1 px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+    <main className="page-main [--page-max:80rem]">
       {/* Encabezado con estética táctil */}
       <div className="pb-8 border-b border-white/10">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/40 border border-white/15 backdrop-blur-md mb-3">
             <Sparkles className="size-3.5 text-[#d9a771]" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#d9a771]">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-[#d9a771]">
               Gestión de Convocatorias
             </span>
           </div>
           <h1 className="font-heading text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
             Convocatorias de Talento
           </h1>
-          <div className="mt-2.5 h-1.5 w-14 rounded-full bg-gradient-to-r from-[#ba5e30] to-[#d9a771]" />
+          <div className="mt-2.5 h-1.5 w-14 rounded-full bg-gradient-to-r from-[#b0512a] to-[#d9a771]" />
           <p className="mt-3 text-sm sm:text-base text-[#e5d8cc] max-w-2xl leading-relaxed">
             Publica y gestiona las vacantes de evaluación psicométrica. Los candidatos registrados
             rendirán automáticamente las baterías asignadas a cada perfil.
@@ -168,7 +168,7 @@ export default async function AdminConvocatoriasPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                       <span
-                        className={`text-[10px] font-mono font-bold uppercase tracking-wider ${theme.kickerClass}`}
+                        className={`text-[11px] font-mono font-bold uppercase tracking-wider ${theme.kickerClass}`}
                       >
                         {statusInfo.kicker}
                       </span>
@@ -203,7 +203,7 @@ export default async function AdminConvocatoriasPage() {
                       <Users className="size-4 text-[#d9a771]" />
                     </div>
                     <div>
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#d4c1b0]/80 block leading-tight">
+                      <span className="text-[11px] font-mono uppercase tracking-wider text-[#d4c1b0] block leading-tight">
                         Postulantes
                       </span>
                       <span className="text-lg sm:text-xl font-extrabold text-white block leading-tight mt-0.5">
@@ -217,7 +217,7 @@ export default async function AdminConvocatoriasPage() {
                       <CheckCircle2 className="size-4 text-emerald-400" />
                     </div>
                     <div>
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#d4c1b0]/80 block leading-tight">
+                      <span className="text-[11px] font-mono uppercase tracking-wider text-[#d4c1b0] block leading-tight">
                         Evaluados
                       </span>
                       <span className="text-lg sm:text-xl font-extrabold text-white block leading-tight mt-0.5">
@@ -241,7 +241,7 @@ export default async function AdminConvocatoriasPage() {
                   <div className="flex flex-wrap items-center gap-2">
                     <Button
                       size="sm"
-                      className="h-9 px-4 rounded-full bg-gradient-to-r from-[#ba5e30] to-[#8c3f19] text-white font-semibold text-xs shadow-[0_8px_18px_-4px_rgba(186,94,48,0.6),inset_0_1px_1px_rgba(255,255,255,0.3)] hover:from-[#ce6d3d] hover:to-[#ba5e30] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5"
+                      className="h-9 px-4 rounded-full bg-gradient-to-r from-[#b0512a] to-[#8c3f19] text-white font-semibold text-xs shadow-[0_8px_18px_-4px_rgba(176,81,42,0.6),inset_0_1px_1px_rgba(255,255,255,0.3)] hover:from-[#c05f33] hover:to-[#b0512a] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5"
                       render={<Link href={`/admin/convocatorias/${job.id}`} />}
                     >
                       Ver candidatos

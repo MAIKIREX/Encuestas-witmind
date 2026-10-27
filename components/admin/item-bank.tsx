@@ -78,7 +78,7 @@ export function ItemBank({
         {editing !== "new" && (
           <Button
             size="sm"
-            className="h-10 px-5 rounded-full bg-gradient-to-r from-[#ba5e30] to-[#8c3f19] text-white font-semibold text-xs sm:text-sm shadow-[0_8px_18px_-4px_rgba(186,94,48,0.6)] hover:from-[#ce6d3d] hover:to-[#ba5e30] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
+            className="h-10 px-5 rounded-full bg-gradient-to-r from-[#b0512a] to-[#8c3f19] text-white font-semibold text-xs sm:text-sm shadow-[0_8px_18px_-4px_rgba(176,81,42,0.6)] hover:from-[#c05f33] hover:to-[#b0512a] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
             onClick={() => setEditing("new")}
           >
             <Plus className="size-4" />
@@ -307,7 +307,7 @@ function ItemRow({
         <div className="mt-4 pt-4 border-t border-white/10 flex flex-wrap items-center gap-3">
           <Button
             size="sm"
-            className="h-10 px-5 rounded-full bg-gradient-to-r from-[#ba5e30] to-[#8c3f19] text-white font-semibold text-xs sm:text-sm shadow-[0_8px_18px_-4px_rgba(186,94,48,0.5)] hover:from-[#ce6d3d] hover:to-[#ba5e30] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
+            className="h-10 px-5 rounded-full bg-gradient-to-r from-[#b0512a] to-[#8c3f19] text-white font-semibold text-xs sm:text-sm shadow-[0_8px_18px_-4px_rgba(176,81,42,0.5)] hover:from-[#c05f33] hover:to-[#b0512a] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
             onClick={onEdit}
           >
             <Pencil className="size-3.5" />
@@ -383,7 +383,7 @@ function MediaThumb({
     return (
       <div
         style={{ width: size, height: size }}
-        className="grid place-items-center rounded-lg border border-dashed border-border bg-muted/40 text-xs text-muted-foreground animate-pulse"
+        className="grid place-items-center rounded-lg border border-dashed border-white/25 bg-black/25 text-xs text-muted-foreground animate-pulse"
       >
         …
       </div>
@@ -441,7 +441,7 @@ function MediaUploader({
             size="icon-sm"
             variant="ghost"
             aria-label="Quitar imagen"
-            className="absolute -top-2 -right-2 bg-background"
+            className="absolute -top-2 -right-2 bg-card"
             onClick={() => onChange(null)}
           >
             <Trash2 />
@@ -450,7 +450,7 @@ function MediaUploader({
       ) : (
         <label
           style={{ width: size, height: size }}
-          className="grid cursor-pointer place-items-center rounded-lg border border-dashed border-border text-center text-xs text-muted-foreground hover:bg-muted"
+          className="grid cursor-pointer place-items-center rounded-lg border border-dashed border-white/25 text-center text-xs text-muted-foreground hover:bg-white/10"
         >
           {uploading ? "Subiendo…" : "Subir imagen"}
           <input
@@ -792,7 +792,7 @@ function ItemForm({
         <div className="flex items-center gap-3 pt-4 border-t border-white/12">
           <Button
             disabled={pending}
-            className="h-10 px-6 rounded-full bg-gradient-to-r from-[#ba5e30] to-[#8c3f19] text-white font-semibold text-xs sm:text-sm shadow-[0_8px_18px_-4px_rgba(186,94,48,0.6)] hover:from-[#ce6d3d] hover:to-[#ba5e30] transition-all"
+            className="h-10 px-6 rounded-full bg-gradient-to-r from-[#b0512a] to-[#8c3f19] text-white font-semibold text-xs sm:text-sm shadow-[0_8px_18px_-4px_rgba(176,81,42,0.6)] hover:from-[#c05f33] hover:to-[#b0512a] transition-all"
             onClick={save}
           >
             {pending ? "Guardando…" : "Guardar pregunta"}

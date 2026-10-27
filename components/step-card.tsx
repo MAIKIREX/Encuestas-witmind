@@ -21,14 +21,14 @@ export function StepCard({ icon, step, title, body, index }: StepCardProps) {
       secondary: "M0,0 L400,0 L400,102 C330,132 260,86 195,116 C130,142 65,96 0,122 Z",
       primary: "M0,0 L400,0 L400,90 C335,120 265,76 195,104 C125,130 60,84 0,108 Z",
       highlight: "M0,108 C60,84 125,130 195,104 C265,76 335,120 400,90",
-      accentGrad: { start: "#5c7953", mid: "#ba5e30", end: "#0c2419" },
+      accentGrad: { start: "#5c7953", mid: "#b0512a", end: "#0c2419" },
     },
     // Tarjeta 02: Onda central con acento terracota cálido
     {
       secondary: "M0,0 L400,0 L400,110 C340,82 280,136 205,118 C130,100 70,126 0,98 Z",
       primary: "M0,0 L400,0 L400,98 C340,72 280,124 205,106 C130,88 70,114 0,86 Z",
       highlight: "M0,86 C70,114 130,88 205,106 C280,124 340,72 400,98",
-      accentGrad: { start: "#ba5e30", mid: "#d9a771", end: "#0c2419" },
+      accentGrad: { start: "#b0512a", mid: "#d9a771", end: "#0c2419" },
     },
     // Tarjeta 03: Cascada asimétrica en esmeralda profundo
     {

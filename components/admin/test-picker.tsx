@@ -33,7 +33,7 @@ export function TestPicker({
       {tests.map((test) => (
         <Label
           key={test.id}
-          className="flex items-start gap-3 rounded-lg border border-border p-3 has-[[data-checked]]:border-primary"
+          className="flex items-start gap-3 rounded-xl border border-white/20 bg-black/20 p-3 has-[[data-checked]]:border-accent has-[[data-checked]]:bg-primary/20"
         >
           <Checkbox
             name={name}

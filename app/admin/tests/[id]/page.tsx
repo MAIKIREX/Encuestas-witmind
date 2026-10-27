@@ -39,7 +39,7 @@ export default async function AdminTestDetailPage({ params }: PageProps<"/admin/
   const mediaUrls = await signAdminMediaPaths(mediaPaths);
 
   return (
-    <main className="mx-auto w-full max-w-7xl flex-1 px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+    <main className="page-main [--page-max:80rem]">
       {/* Botón de retroceso y Kicker */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
         <div>
@@ -54,7 +54,7 @@ export default async function AdminTestDetailPage({ params }: PageProps<"/admin/
           <h1 className="font-heading text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
             {test.name}
           </h1>
-          <div className="mt-2.5 h-1.5 w-14 rounded-full bg-gradient-to-r from-[#ba5e30] to-[#d9a771]" />
+          <div className="mt-2.5 h-1.5 w-14 rounded-full bg-gradient-to-r from-[#b0512a] to-[#d9a771]" />
           {test.description && (
             <p className="mt-3 text-sm sm:text-base text-[#e5d8cc] max-w-3xl leading-relaxed">
               {test.description}

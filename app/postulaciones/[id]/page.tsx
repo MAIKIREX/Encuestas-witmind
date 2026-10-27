@@ -62,31 +62,25 @@ export default async function PostulacionPage({ params }: PageProps<"/postulacio
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden">
-      {/* Elementos ambientales de fondo */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-80 w-full max-w-4xl rounded-full bg-accent/40 blur-3xl -z-10"
-      />
-
       <SiteHeader />
 
-      <main className="mx-auto w-full max-w-3xl flex-1 px-4 sm:px-6 py-10 sm:py-14">
+      <main className="page-main">
         <Link
           href="/panel"
-          className="inline-flex items-center text-xs font-medium text-muted-foreground hover:text-primary transition-colors"
+          className="inline-flex items-center text-xs font-medium text-muted-foreground hover:text-accent transition-colors"
         >
           ← Volver a mi panel
         </Link>
 
-        <div className="mt-4">
-          <p className="text-xs font-semibold uppercase tracking-widest text-primary">
-            evaluación de selección
+        <div className="mt-5">
+          <p className="text-xs font-semibold uppercase tracking-widest text-accent">
+            Evaluación de selección
           </p>
-          <h1 className="mt-1 font-heading text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+          <h1 className="mt-2 font-heading text-3xl sm:text-4xl font-bold tracking-tight text-foreground text-balance">
             {job?.title}
           </h1>
-          <div className="mt-2.5 mb-4 h-1 w-9 rounded-full bg-primary" />
-          <p className="text-sm text-muted-foreground">{job?.assessments?.name}</p>
+          <div className="mt-3 h-1 w-10 rounded-full bg-accent" />
+          <p className="mt-4 text-sm sm:text-base text-muted-foreground">{job?.assessments?.name}</p>
         </div>
 
         {application.is_test && (
@@ -108,25 +102,25 @@ export default async function PostulacionPage({ params }: PageProps<"/postulacio
           <AlertTitle className="flex flex-wrap items-center gap-2">Antes de comenzar</AlertTitle>
           <AlertDescription>
             Cada prueba monitorea cambios de pestaña y salidas de pantalla completa. Si acumulas 3
-            incidencias, esa prueba en particular se cancela automáticamente y no se puede repetir
-            — pero podrás continuar sin problema con las demás pruebas de tu postulación.
+            incidencias, esa prueba en particular se cancela automáticamente y no se puede repetir,
+            pero podrás continuar sin problema con las demás pruebas de tu postulación.
           </AlertDescription>
         </Alert>
 
-        <div className="mt-8 rounded-3xl border border-border/70 bg-card p-6 sm:p-7 shadow-[0_12px_32px_-8px_rgba(11,43,64,0.06)]">
+        <div className="surface-card mt-8 p-6 sm:p-7">
           <div className="flex items-center justify-between text-xs sm:text-sm font-medium mb-3">
             <span className="text-muted-foreground">
               {doneCount} de {tests.length} pruebas completadas
             </span>
-            <span className="tabular-nums font-bold text-primary">{progress}%</span>
+            <span className="tabular-nums font-bold text-accent">{progress}%</span>
           </div>
           <Progress value={progress} />
         </div>
 
         {nextIndex === -1 && (
-          <Card className="mt-8 border-emerald-500/20 bg-emerald-50/40 dark:bg-emerald-950/20">
+          <Card className="mt-8 border-emerald-400/30 bg-emerald-950/50">
             <CardHeader>
-              <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+              <div className="flex items-center gap-2 text-emerald-300">
                 <CheckCircle2 className="size-5" />
                 <CardTitle className="text-base font-bold">Evaluación completa</CardTitle>
               </div>
@@ -138,7 +132,7 @@ export default async function PostulacionPage({ params }: PageProps<"/postulacio
           </Card>
         )}
 
-        <div className="mt-8 grid gap-3.5">
+        <div className="mt-10 grid gap-4">
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {tests.map((t: any, i: number) => {
             const test = t.tests;
@@ -162,10 +156,10 @@ export default async function PostulacionPage({ params }: PageProps<"/postulacio
                 key={test?.id}
                 className={cn(
                   "transition-all duration-300",
-                  locked && "opacity-55 bg-muted/40",
-                  inProgress && "ring-2 ring-primary/40 shadow-[0_12px_32px_-8px_rgba(242,101,34,0.12)]",
-                  scored && "border-border/60",
-                  disqualified && "border-destructive/30 bg-destructive/5"
+                  locked && "opacity-60",
+                  inProgress && "border-accent/50 ring-2 ring-accent/30",
+                  scored && "border-white/10",
+                  disqualified && "border-destructive/40"
                 )}
               >
                 <CardHeader>
@@ -174,11 +168,11 @@ export default async function PostulacionPage({ params }: PageProps<"/postulacio
                       className={cn(
                         "size-4.5 shrink-0",
                         scored
-                          ? "text-emerald-500"
+                          ? "text-emerald-400"
                           : disqualified
                             ? "text-destructive"
                             : inProgress
-                              ? "text-primary"
+                              ? "text-accent"
                               : "text-muted-foreground"
                       )}
                     />
@@ -187,7 +181,7 @@ export default async function PostulacionPage({ params }: PageProps<"/postulacio
                     {scored && <Badge variant="secondary">Completada</Badge>}
                     {inProgress && <Badge variant="default">En curso</Badge>}
                     {disqualified && <Badge variant="destructive">Descalificada</Badge>}
-                    <span className="ml-auto inline-flex items-center rounded-full bg-secondary/60 px-2.5 py-0.5 text-xs text-muted-foreground font-normal">
+                    <span className="ml-auto inline-flex items-center rounded-full bg-white/10 px-2.5 py-0.5 text-xs text-foreground font-normal">
                       {formatMinutes(test?.time_limit_seconds)}
                     </span>
                   </CardTitle>

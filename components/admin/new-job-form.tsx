@@ -33,7 +33,7 @@ export function NewJobDialog({ tests }: { tests: PickableTest[] }) {
       <div className="flex justify-center">
         <Button
           onClick={() => setOpen(true)}
-          className="h-11 px-6 rounded-full bg-gradient-to-r from-[#ba5e30] to-[#8c3f19] text-white font-semibold text-sm shadow-[0_10px_25px_-5px_rgba(186,94,48,0.6),inset_0_1px_1px_rgba(255,255,255,0.3)] hover:from-[#ce6d3d] hover:to-[#ba5e30] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+          className="h-11 px-6 rounded-full bg-gradient-to-r from-[#b0512a] to-[#8c3f19] text-white font-semibold text-sm shadow-[0_10px_25px_-5px_rgba(176,81,42,0.6),inset_0_1px_1px_rgba(255,255,255,0.3)] hover:from-[#c05f33] hover:to-[#b0512a] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
         >
           <Plus className="size-4 mr-1.5" />
           Nueva convocatoria

@@ -121,20 +121,20 @@ export default async function AdminTestsPage() {
     .order("name");
 
   return (
-    <main className="mx-auto w-full max-w-7xl flex-1 px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+    <main className="page-main [--page-max:80rem]">
       {/* Encabezado armónico con el index */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-white/10">
         <div>
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/40 border border-white/15 backdrop-blur-md mb-3">
             <Sparkles className="size-3.5 text-[#d9a771]" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#d9a771]">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-[#d9a771]">
               Banco de Evaluaciones Psicométricas
             </span>
           </div>
           <h1 className="font-heading text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
             Banco de Pruebas
           </h1>
-          <div className="mt-2.5 h-1.5 w-14 rounded-full bg-gradient-to-r from-[#ba5e30] to-[#d9a771]" />
+          <div className="mt-2.5 h-1.5 w-14 rounded-full bg-gradient-to-r from-[#b0512a] to-[#d9a771]" />
           <p className="mt-3 text-sm sm:text-base text-[#e5d8cc] max-w-2xl leading-relaxed">
             Cada prueba es un conjunto de preguntas y reactivos psicométricos con algoritmo propio
             de calificación. Las claves de respuesta y baremos se procesan de forma segura fuera del alcance de la API pública.
@@ -193,13 +193,13 @@ export default async function AdminTestsPage() {
                     </span>
 
                     {test.source === "seed_licensed" && (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-black/45 text-[#d9a771] border border-white/15 backdrop-blur-xs">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-black/45 text-[#d9a771] border border-white/15 backdrop-blur-xs">
                         Instrumento externo
                       </span>
                     )}
 
                     {!test.is_active && (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-red-950/70 text-red-300 border border-red-500/30">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-red-950/70 text-red-300 border border-red-500/30">
                         Inactiva
                       </span>
                     )}
@@ -244,7 +244,7 @@ export default async function AdminTestsPage() {
                       <FileQuestion className="size-3.5 text-[#d9a771]" />
                     </div>
                     <div className="text-center">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#d4c1b0]/80 block leading-tight">
+                      <span className="text-[11px] font-mono uppercase tracking-wider text-[#d4c1b0] block leading-tight">
                         Reactivos
                       </span>
                       <span className="text-base font-extrabold text-white block leading-tight mt-0.5">
@@ -258,7 +258,7 @@ export default async function AdminTestsPage() {
                       <Clock className="size-3.5 text-[#f5d09f]" />
                     </div>
                     <div className="text-center">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#d4c1b0]/80 block leading-tight">
+                      <span className="text-[11px] font-mono uppercase tracking-wider text-[#d4c1b0] block leading-tight">
                         Duración
                       </span>
                       <span className="text-base font-extrabold text-white block leading-tight mt-0.5">
@@ -272,7 +272,7 @@ export default async function AdminTestsPage() {
                 <div className="flex flex-row sm:flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-2.5 shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-white/10">
                   <Button
                     size="sm"
-                    className="h-10 px-5 rounded-full bg-gradient-to-r from-[#ba5e30] to-[#8c3f19] text-white font-semibold text-xs sm:text-sm shadow-[0_8px_18px_-4px_rgba(186,94,48,0.6),inset_0_1px_1px_rgba(255,255,255,0.3)] hover:from-[#ce6d3d] hover:to-[#ba5e30] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
+                    className="h-10 px-5 rounded-full bg-gradient-to-r from-[#b0512a] to-[#8c3f19] text-white font-semibold text-xs sm:text-sm shadow-[0_8px_18px_-4px_rgba(176,81,42,0.6),inset_0_1px_1px_rgba(255,255,255,0.3)] hover:from-[#c05f33] hover:to-[#b0512a] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
                     render={<Link href={`/admin/tests/${test.id}`} />}
                   >
                     Ver y editar preguntas

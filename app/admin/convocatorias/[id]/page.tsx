@@ -117,19 +117,19 @@ export default async function AdminJobPage({ params }: PageProps<"/admin/convoca
     .sort((a, b) => (b.avg ?? -1) - (a.avg ?? -1));
 
   return (
-    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10">
-      <Link href="/admin/convocatorias" className="text-sm text-muted-foreground hover:underline">
+    <main className="page-main [--page-max:72rem]">
+      <Link href="/admin/convocatorias" className="text-sm text-muted-foreground hover:text-accent transition-colors">
         ← Volver a convocatorias
       </Link>
 
-      <h1 className="mt-4 font-heading text-2xl font-semibold">{job.title}</h1>
-      <p className="mt-1 text-muted-foreground">
+      <h1 className="mt-5 font-heading text-3xl font-bold tracking-tight">{job.title}</h1>
+      <p className="mt-2 text-muted-foreground">
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        {(job.assessments as any)?.name} · {applications?.length ?? 0} postulantes
+        {(job.assessments as any)?.name}. {applications?.length ?? 0} postulantes
       </p>
 
       {job.status === "draft" && (
-        <Card className="mt-6">
+        <Card className="mt-10">
           <CardHeader>
             <CardTitle>Pruebas de esta convocatoria</CardTitle>
             <CardDescription>
@@ -150,7 +150,7 @@ export default async function AdminJobPage({ params }: PageProps<"/admin/convoca
       )}
 
       {!applications?.length ? (
-        <Card className="mt-8">
+        <Card className="mt-10">
           <CardHeader>
             <CardTitle>Todavía no hay postulantes</CardTitle>
             <CardDescription>
@@ -161,7 +161,7 @@ export default async function AdminJobPage({ params }: PageProps<"/admin/convoca
           </CardHeader>
         </Card>
       ) : (
-        <div className="mt-8 overflow-x-auto">
+        <div className="surface-card mt-10 overflow-x-auto p-2 sm:p-3">
           <Table>
             <TableHeader>
               <TableRow>
@@ -191,7 +191,7 @@ export default async function AdminJobPage({ params }: PageProps<"/admin/convoca
                   </TableCell>
 
                   <TableCell className="text-right tabular-nums">
-                    {avg === null ? "—" : `${avg}%`}
+                    {avg === null ? "-" : `${avg}%`}
                   </TableCell>
 
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
@@ -199,13 +199,13 @@ export default async function AdminJobPage({ params }: PageProps<"/admin/convoca
                     const p = row?.percentByTest.get(t.tests?.id);
                     return (
                       <TableCell key={t.tests?.id} className="text-right tabular-nums">
-                        {p === null || p === undefined ? "—" : `${p}%`}
+                        {p === null || p === undefined ? "-" : `${p}%`}
                       </TableCell>
                     );
                   })}
 
                   <TableCell className="text-right tabular-nums whitespace-nowrap">
-                    {row?.totalSeconds ? formatDuration(row.totalSeconds) : "—"}
+                    {row?.totalSeconds ? formatDuration(row.totalSeconds) : "-"}
                   </TableCell>
 
                   <TableCell>

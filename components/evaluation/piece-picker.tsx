@@ -39,7 +39,7 @@ export function PiecePicker({
   }
 
   return (
-    <div className="rounded-2xl border border-border/70 bg-background/60 p-3 sm:p-4">
+    <div className="rounded-2xl border border-white/15 bg-black/25 p-3 sm:p-4">
       <div role="group" aria-label="Piezas disponibles" className="grid grid-cols-3 gap-2.5 sm:grid-cols-5">
         {pieces.map((piece) => {
           const active = selected.includes(piece.n);
@@ -55,16 +55,16 @@ export function PiecePicker({
               className={cn(
                 "relative grid min-h-24 place-items-center rounded-xl border px-2 pb-2 pt-6 shadow-xs outline-none transition-all focus-visible:ring-3 focus-visible:ring-ring/50",
                 active
-                  ? "border-primary bg-primary/10 ring-1 ring-primary/40"
+                  ? "border-accent bg-primary/30 ring-1 ring-accent/50"
                   : blocked
-                    ? "cursor-not-allowed border-border/50 bg-card/60 opacity-60"
-                    : "border-border/70 bg-card hover:bg-secondary/60",
+                    ? "cursor-not-allowed border-white/10 bg-card/60 opacity-60"
+                    : "border-white/20 bg-card hover:bg-white/10",
               )}
             >
               <span
                 className={cn(
                   "absolute left-2 top-2 grid size-5 place-items-center rounded-full text-[11px] font-bold tabular-nums",
-                  active ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground/80",
+                  active ? "bg-primary text-primary-foreground" : "bg-white/15 text-foreground",
                 )}
               >
                 {active ? <Check className="size-3" strokeWidth={3} /> : piece.n}
@@ -76,7 +76,7 @@ export function PiecePicker({
                   strokeLinejoin="round"
                   className={cn(
                     "stroke-foreground/80 transition-colors",
-                    active ? "fill-primary/25" : "fill-secondary/70",
+                    active ? "fill-accent/30" : "fill-white/10",
                   )}
                 />
               </svg>

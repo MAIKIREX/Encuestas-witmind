@@ -43,7 +43,7 @@ export function AuthForm({ mode, next }: { mode: "login" | "signup"; next: strin
           {mode === "login" && (
             <Link
               href="/recuperar"
-              className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+              className="text-xs text-accent underline-offset-4 hover:underline"
             >
               ¿Olvidaste tu contraseña?
             </Link>

@@ -27,8 +27,8 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Evalua - witmind — Plataforma de evaluación psicométrica",
-    template: "%s · Evalua - witmind",
+    default: "Evalua - witmind | Plataforma de evaluación psicométrica",
+    template: "%s | Evalua - witmind",
   },
   description:
     "Plataforma de evaluación psicométrica, pruebas de Raven, razonamiento lógico y matemático para postulantes de Evalua - witmind.",

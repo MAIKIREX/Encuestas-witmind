@@ -57,28 +57,22 @@ export default async function ConvocatoriasPage() {
     .order("published_at", { ascending: false });
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden bg-[#672d15] text-[#fcfaf5]">
-      {/* Elementos ambientales de fondo */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-96 w-full max-w-5xl rounded-full bg-gradient-to-b from-[#d9a771]/20 via-[#133827]/15 to-transparent blur-3xl -z-10"
-      />
-
+    <div className="relative min-h-screen flex flex-col overflow-hidden">
       <SiteHeader />
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+      <main className="page-main [--page-max:72rem]">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/40 border border-white/15 backdrop-blur-md mb-3">
-            <Sparkles className="size-3.5 text-[#d9a771]" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#d9a771]">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/35 border border-white/15 mb-4">
+            <Sparkles className="size-3.5 text-accent" />
+            <span className="text-[11px] font-bold uppercase tracking-widest text-accent">
               Oportunidades en Evalua - witmind
             </span>
           </div>
           <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
             Convocatorias abiertas
           </h1>
-          <div className="mt-3 mb-4 h-1.5 w-14 rounded-full bg-gradient-to-r from-[#ba5e30] to-[#d9a771]" />
-          <p className="text-base text-[#e5d8cc] max-w-2xl leading-relaxed">
+          <div className="mt-4 h-1 w-12 rounded-full bg-accent" />
+          <p className="mt-4 text-base text-[#e5d8cc] max-w-2xl leading-relaxed">
             Elige una vacante para conocer el perfil del puesto y las evaluaciones psicométricas que
             incluye el proceso de selección.
           </p>
@@ -95,7 +89,7 @@ export default async function ConvocatoriasPage() {
             </p>
           </div>
         ) : (
-          <div className="mt-8 flex flex-col gap-4 sm:gap-5">
+          <div className="mt-10 flex flex-col gap-4 sm:gap-5">
             {jobs.map((job, index) => {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const tests = ((job.assessments as any)?.assessment_tests ?? []) as {
@@ -123,11 +117,10 @@ export default async function ConvocatoriasPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                         <span
-                          className={`text-[10px] font-mono font-bold uppercase tracking-wider ${theme.kickerClass}`}
+                          className={`text-[11px] font-mono font-bold uppercase tracking-wider ${theme.kickerClass}`}
                         >
                           Vacante Abierta
                         </span>
-                        <span className="text-white/30 text-xs">·</span>
                         <div className="text-[11px] text-emerald-300 flex items-center gap-1 font-medium">
                           <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
                           <span>Postulaciones activas</span>
@@ -180,7 +173,7 @@ export default async function ConvocatoriasPage() {
                   <div className="flex items-center justify-end shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-white/10">
                     <Button
                       size="sm"
-                      className="h-10 px-6 rounded-full bg-gradient-to-r from-[#ba5e30] to-[#8c3f19] text-white font-semibold text-xs sm:text-sm shadow-[0_8px_18px_-4px_rgba(186,94,48,0.6),inset_0_1px_1px_rgba(255,255,255,0.3)] hover:from-[#ce6d3d] hover:to-[#ba5e30] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer"
+                      className="h-10 px-6 rounded-full bg-gradient-to-r from-[#b0512a] to-[#8c3f19] text-white font-semibold text-xs sm:text-sm shadow-[0_8px_18px_-4px_rgba(176,81,42,0.6),inset_0_1px_1px_rgba(255,255,255,0.3)] hover:from-[#c05f33] hover:to-[#b0512a] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer"
                       render={<Link href={`/convocatorias/${job.slug}`} />}
                     >
                       Ver detalle

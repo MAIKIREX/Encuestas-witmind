@@ -52,80 +52,74 @@ export default async function ConvocatoriaPage({ params }: PageProps<"/convocato
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden">
-      {/* Elementos ambientales de fondo */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-80 w-full max-w-4xl rounded-full bg-accent/40 blur-3xl -z-10"
-      />
-
       <SiteHeader />
 
-      <main className="mx-auto w-full max-w-3xl flex-1 px-4 sm:px-6 py-10 sm:py-14">
+      <main className="page-main">
         <Link
           href="/convocatorias"
-          className="inline-flex items-center text-xs font-medium text-muted-foreground hover:text-primary transition-colors"
+          className="inline-flex items-center text-xs font-medium text-muted-foreground hover:text-accent transition-colors"
         >
           ← Volver a convocatorias
         </Link>
 
-        <h1 className="mt-4 font-heading text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+        <h1 className="mt-5 font-heading text-3xl sm:text-4xl font-bold tracking-tight text-foreground text-balance">
           {job.title}
         </h1>
-        <div className="mt-2.5 mb-4 h-1 w-9 rounded-full bg-primary" />
+        <div className="mt-3 h-1 w-10 rounded-full bg-accent" />
 
-        <div className="flex flex-wrap items-center gap-2 text-xs">
+        <div className="mt-5 flex flex-wrap items-center gap-2 text-xs">
           {job.location && (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary/80 px-3 py-1 text-secondary-foreground font-medium">
-              <MapPin className="size-3" />
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-foreground font-medium border border-white/10">
+              <MapPin className="size-3 text-accent" />
               {job.location}
             </span>
           )}
           {job.employment_type && (
-            <span className="inline-flex items-center rounded-full bg-secondary/80 px-3 py-1 text-secondary-foreground font-medium">
+            <span className="inline-flex items-center rounded-full bg-card px-3 py-1.5 text-foreground font-medium border border-white/10">
               {job.employment_type}
             </span>
           )}
           {total > 0 && (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-primary font-medium">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-black/35 px-3 py-1.5 text-accent font-medium border border-accent/30">
               <Timer className="size-3" />
               Evaluación de {formatMinutes(total)}
             </span>
           )}
         </div>
 
-        <div className="mt-8 rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-[0_12px_32px_-8px_rgba(11,43,64,0.06)]">
+        <div className="surface-card mt-10 p-6 sm:p-8">
           <h2 className="font-heading text-base font-bold text-foreground">Descripción del puesto</h2>
-          <p className="mt-3 leading-relaxed text-sm text-foreground/90 whitespace-pre-line">
+          <p className="mt-3 max-w-[65ch] leading-relaxed text-sm text-foreground/90 whitespace-pre-line">
             {job.description}
           </p>
         </div>
 
-        <div className="mt-10">
-          <p className="text-xs font-semibold uppercase tracking-widest text-primary">
-            batería de pruebas
+        <div className="mt-14">
+          <p className="text-xs font-semibold uppercase tracking-widest text-accent">
+            Batería de pruebas
           </p>
-          <h2 className="mt-1 font-heading text-xl font-bold text-foreground">La evaluación</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h2 className="mt-2 font-heading text-xl sm:text-2xl font-bold text-foreground">La evaluación</h2>
+          <p className="mt-2 max-w-[65ch] text-sm text-muted-foreground leading-relaxed">
             Se rinde en el orden indicado. Puedes pausar entre una prueba y otra, pero una vez que
             inicias una prueba debes terminarla.
           </p>
         </div>
 
-        <div className="mt-5 grid gap-3">
+        <div className="mt-6 grid gap-4">
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {tests.map((t: any, i: number) => (
-            <Card key={t.position} size="sm" className="hover:border-primary/40 transition-colors">
+            <Card key={t.position} size="sm" className="hover:border-accent/40 transition-colors">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <span className="flex size-6 items-center justify-center rounded-full bg-secondary text-xs font-bold text-muted-foreground">
+                <CardTitle className="flex items-center gap-2.5 text-base">
+                  <span className="flex size-6 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground">
                     {i + 1}
                   </span>
                   <span>{t.tests?.name}</span>
-                  <span className="ml-auto inline-flex items-center rounded-full bg-secondary/60 px-2.5 py-0.5 text-xs text-muted-foreground">
+                  <span className="ml-auto inline-flex items-center rounded-full bg-white/10 px-2.5 py-0.5 text-xs text-foreground font-normal">
                     {formatMinutes(t.tests?.time_limit_seconds)}
                   </span>
                 </CardTitle>
-                <CardDescription className="text-xs sm:text-sm pl-8">
+                <CardDescription className="text-xs sm:text-sm pl-[2.125rem]">
                   {t.tests?.description}
                 </CardDescription>
               </CardHeader>
@@ -133,8 +127,8 @@ export default async function ConvocatoriaPage({ params }: PageProps<"/convocato
           ))}
         </div>
 
-        <Card className="mt-10 border-primary/20 bg-gradient-to-r from-accent/25 via-card to-card">
-          <CardContent className="p-6">
+        <Card className="mt-14 border-accent/25 bg-gradient-to-r from-[#1d4a35] via-card to-card">
+          <CardContent>
             {isAdmin ? (
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>

@@ -363,7 +363,7 @@ export function Runner({
 
   if (disqualifiedReason) {
     return (
-      <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-background px-4">
+      <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-4">
         <Card className="max-w-md border-destructive/30">
           <CardHeader>
             <div className="flex items-center gap-2 text-destructive">
@@ -394,15 +394,9 @@ export function Runner({
   if (!current) return null;
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
-      {/* Elementos ambientales de fondo */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-80 w-full max-w-3xl rounded-full bg-accent/35 blur-3xl -z-10"
-      />
-
-      <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-4 sm:px-6 py-8 sm:py-12">
-        <header className="grid gap-3.5 rounded-3xl border border-border/70 bg-card p-5 sm:p-6 shadow-[0_10px_30px_-10px_rgba(11,43,64,0.06)]">
+    <div className="relative min-h-screen flex flex-col overflow-hidden">
+      <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-4 sm:px-6 py-8 sm:py-12 pb-16">
+        <header className="surface-card grid gap-4 p-5 sm:p-6">
           <div className="flex items-center justify-between gap-4">
             <span className="font-heading text-sm font-bold text-foreground">{state.test.name}</span>
 
@@ -410,8 +404,8 @@ export function Runner({
               <span
                 className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-mono text-xs font-semibold tabular-nums border ${
                   remaining <= 60
-                    ? "bg-destructive/10 border-destructive/30 text-destructive animate-pulse"
-                    : "bg-secondary/80 border-border/50 text-foreground"
+                    ? "bg-destructive/15 border-destructive/40 text-destructive animate-pulse"
+                    : "bg-black/30 border-white/15 text-foreground"
                 }`}
               >
                 <Timer className="size-3.5" />
@@ -429,7 +423,7 @@ export function Runner({
             {offline && (
               <span className="flex items-center gap-1 text-destructive font-semibold">
                 <AlertTriangle className="size-3" />
-                Sin conexión — guardando localmente
+                Sin conexión, guardando localmente
               </span>
             )}
           </div>
@@ -437,8 +431,8 @@ export function Runner({
           <div
             className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium ${
               strikes > 0
-                ? "bg-destructive/10 text-destructive"
-                : "bg-secondary/60 text-muted-foreground"
+                ? "bg-destructive/15 text-destructive"
+                : "bg-black/25 text-muted-foreground"
             }`}
           >
             <ShieldAlert className="size-3.5 shrink-0" />
@@ -612,8 +606,8 @@ function ChoiceButton({
       aria-pressed={active}
       className={`rounded-2xl border px-4 py-3 text-left text-sm font-medium transition-all shadow-xs ${
         active
-          ? "border-primary bg-primary/10 text-foreground ring-1 ring-primary/40"
-          : "border-border/70 bg-card hover:bg-secondary/60 text-foreground/90"
+          ? "border-accent bg-primary/30 text-foreground ring-1 ring-accent/50"
+          : "border-white/15 bg-black/25 hover:bg-black/40 text-foreground"
       }`}
     >
       {label}
@@ -638,10 +632,10 @@ function ForcedChoiceRow({
     <div
       className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm transition-all shadow-xs ${
         isMost
-          ? "border-primary bg-primary/10 ring-1 ring-primary/40"
+          ? "border-accent bg-primary/30 ring-1 ring-accent/50"
           : isLeast
-            ? "border-destructive bg-destructive/10 ring-1 ring-destructive/40"
-            : "border-border/70 bg-card"
+            ? "border-destructive bg-destructive/15 ring-1 ring-destructive/40"
+            : "border-white/15 bg-black/25"
       }`}
     >
       <span className="flex-1 font-medium">{label}</span>
@@ -651,7 +645,7 @@ function ForcedChoiceRow({
         aria-label="Más se parece a mí"
         onClick={onMost}
         className={`grid size-8 shrink-0 place-items-center rounded-full border text-sm font-bold transition-all ${
-          isMost ? "border-primary bg-primary text-primary-foreground shadow-xs" : "border-border/80 hover:bg-secondary"
+          isMost ? "border-accent bg-primary text-primary-foreground shadow-xs" : "border-white/25 hover:bg-white/10"
         }`}
       >
         +
@@ -662,7 +656,7 @@ function ForcedChoiceRow({
         aria-label="Menos se parece a mí"
         onClick={onLeast}
         className={`grid size-8 shrink-0 place-items-center rounded-full border text-sm font-bold transition-all ${
-          isLeast ? "border-destructive bg-destructive text-destructive-foreground shadow-xs" : "border-border/80 hover:bg-secondary"
+          isLeast ? "border-destructive bg-destructive text-destructive-foreground shadow-xs" : "border-white/25 hover:bg-white/10"
         }`}
       >
         −
@@ -692,14 +686,14 @@ function ImageChoiceButton({
       aria-label={badge ? `Figura ${badge}` : label}
       className={`relative grid place-items-center rounded-2xl border p-3 transition-all shadow-xs ${
         active
-          ? "border-primary bg-primary/10 ring-1 ring-primary/40"
-          : "border-border/70 bg-card hover:bg-secondary/60"
+          ? "border-accent bg-primary/30 ring-1 ring-accent/50"
+          : "border-white/20 bg-card hover:bg-white/10"
       }`}
     >
       {badge !== undefined && (
         <span
           className={`absolute left-2 top-2 z-10 grid size-5 place-items-center rounded-full text-[11px] font-bold tabular-nums ${
-            active ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground/80"
+            active ? "bg-primary text-primary-foreground" : "bg-white/15 text-foreground"
           }`}
         >
           {badge}
@@ -736,7 +730,7 @@ function FadeImage({
 
   return (
     <span
-      className={`relative block overflow-hidden rounded-2xl border border-border/70 ${className ?? ""}`}
+      className={`relative block overflow-hidden rounded-2xl border border-white/15 ${className ?? ""}`}
       style={ratio ? { aspectRatio: ratio } : undefined}
     >
       <span

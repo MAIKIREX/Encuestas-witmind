@@ -80,7 +80,7 @@ export function FigureTrace({
   const [low, high] = selection.length === 2 ? [Math.min(...selection), Math.max(...selection)] : [];
 
   return (
-    <div className="rounded-2xl border border-border/70 bg-background/60 p-3 sm:p-4">
+    <div className="rounded-2xl border border-white/15 bg-black/25 p-3 sm:p-4">
       <svg
         viewBox={viewBox.join(" ")}
         role="group"
@@ -91,7 +91,7 @@ export function FigureTrace({
           points={points.map((p) => `${p.x},${p.y}`).join(" ")}
           strokeWidth={1.6}
           strokeLinejoin="round"
-          className="fill-secondary/60 stroke-foreground/80"
+          className="fill-white/10 stroke-foreground/80"
         />
 
         {start && end && (
@@ -104,7 +104,7 @@ export function FigureTrace({
             pathLength={1}
             strokeWidth={3}
             strokeLinecap="round"
-            className="stroke-primary motion-safe:animate-draw-line"
+            className="stroke-accent motion-safe:animate-draw-line"
             style={{ strokeDasharray: 1 }}
           />
         )}
@@ -135,7 +135,7 @@ export function FigureTrace({
                 strokeWidth={1.5}
                 className={cn(
                   "fill-none transition-colors",
-                  active ? "stroke-primary/50" : "stroke-transparent group-hover:stroke-primary/40",
+                  active ? "stroke-accent/60" : "stroke-transparent group-hover:stroke-accent/50",
                   "group-focus-visible:stroke-ring",
                 )}
               />
@@ -145,7 +145,7 @@ export function FigureTrace({
                 r={active ? 5.5 : 4.5}
                 className={cn(
                   "transition-all",
-                  active ? "fill-primary" : "fill-foreground group-hover:fill-primary/80",
+                  active ? "fill-accent" : "fill-foreground group-hover:fill-accent/80",
                 )}
               />
               <text
@@ -155,7 +155,7 @@ export function FigureTrace({
                 dominantBaseline="central"
                 className={cn(
                   "pointer-events-none text-[9.5px] font-semibold tabular-nums transition-colors",
-                  active ? "fill-primary" : "fill-foreground",
+                  active ? "fill-accent" : "fill-foreground",
                 )}
               >
                 {point.n}
