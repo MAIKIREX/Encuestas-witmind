@@ -41,7 +41,7 @@ export default async function AdminMcpPage() {
   const revoked = (tokens ?? []).filter((t) => t.revoked_at);
 
   return (
-    <main className="page-main [--page-max:64rem]">
+    <main className="mx-auto w-full max-w-5xl flex-1 px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
       <div className="pb-8 border-b border-white/10">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/40 border border-white/15 backdrop-blur-md mb-3">
           <Sparkles className="size-3.5 text-[#d9a771]" />
