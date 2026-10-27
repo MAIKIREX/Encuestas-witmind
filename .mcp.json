@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "plataforma": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["--yes", "tsx", "mcp/server.ts"]
+    }
+  }
+}
